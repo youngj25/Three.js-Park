@@ -66,10 +66,11 @@ function setup() {
 				scene.add(Pellets);
 			};
 		}();
-			
+		
+		//Stop Pedals for now
 		//Pedals
-		for(var x = 0; x < 25; x++)
-			createPedals();
+		//for(var x = 0; x < 25; x++)
+			//createPedals();
 			
 			
 		//Loader
@@ -93,7 +94,8 @@ function setup() {
 		var planeMaterial2 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
 		var Tree = new THREE.Mesh(planeGeometry2, planeMaterial2);
 		Tree.position.set(-5.5,-1.25,31); //xyz
-		scene.add(Tree);
+		//REmove tree for now
+		//scene.add(Tree);
 			
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
@@ -103,15 +105,16 @@ function setup() {
 		var BenchB = new THREE.Mesh(planeGeometry3, planeMaterial3);
 		BenchB.position.set(2.5,-2,31); //xyz
 		BenchB.rotation.x = -1.25
-		scene.add(BenchB);
+		//Stop bench for now
+		//scene.add(BenchB);
 		
 		var planeGeometry3 = new THREE.BoxGeometry (5.5, 1,0.25);
 		var planeMaterial3 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
 		var BenchT = new THREE.Mesh(planeGeometry3, planeMaterial3);
 		BenchT.position.set(2.5,-1.25,31); //xyz
 		BenchT.rotation.x = 0
-		scene.add(BenchT);
-			
+		//Stop bench for now
+		//scene.add(BenchT);
 		
         //add the output of the renderer to the html element
 			document.getElementById("WebGL-output").appendChild(renderer.domElement);
@@ -137,7 +140,7 @@ function setup() {
 					
 					
 					if(step >= 8 && step <= 20){
-						scene.background = new THREE.Color( 0x4D33AF );
+						scene.background = new THREE.Color( 0x4DEFFF );
 						console.log("Changed!!!");
 					}
 					else if(step >= 50 && step <= 100){
@@ -153,13 +156,15 @@ function setup() {
 						if ((e instanceof THREE.Sprite || e instanceof THREE.Mesh)) {
 							if(e == Tree){
 								//nsole.log("Trial!!");
-								e.rotation.z = 0.002 * Math.sin(step);
+								//Don't move the tree
+								//e.rotation.z = 0.001 * Math.sin(step);
 								
 							}
 							else if(e == Board){
 								//nsole.log("Trial!!");
+								//Don't need to move the grass
 								//e.rotation.z = 0.001 * Math.sin(step);
-								e.position.x = 0.009 * Math.sin(step);
+								//e.position.x = 0.009 * Math.sin(step);
 								
 							}
 							else if(e == BenchB){
