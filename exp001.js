@@ -59,9 +59,11 @@ function setup() {
 				//console.log(Pellets);
 				Pellets.scale.set(0.5,0.25,1);
 				//Pellets.scale.set(0.5,0.5,1);
+				Pellets.material.lights = true;
+				
 				Pellets.name = Math.floor(Math.random()*3);
 				//console.log(Pellets.name);
-				Pellets.position.set(Math.floor(Math.random()*17)-8, //X
+				Pellets.position.set(Math.floor(Math.random()*20)-5, //X
 								Math.floor(Math.random()*15)-5, //Y
 								Math.floor(Math.random()*8)+30); //Z
 				scene.add(Pellets);
@@ -104,16 +106,19 @@ function setup() {
 		var sphereGeometry = new THREE.SphereGeometry(5,16,16);
 		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
 		var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
-		Moon.position.set(21,13.5,3); //xyz
-		spotLight.position.set(21, 13.5, 0);
+		//Moon.position.set(100,13.5,50); //xyz
+		Moon.position.set(0,13.5,20); //xyz
+		//spotLight.position.set(0, 13.5, 0);
 		Moon.material.transparent = true;
-		Moon.material.opacity = 0;
-		//Moon.lights = true;
+		Moon.material.opacity = 1;
 		
 		scene.add( Moon );
 		
-		var moonLight = new THREE.PointLight( 0x0000ff, 3, 100 );
-		moonLight.position.set( 21, 13.5, 2 );
+		var moonLight = new THREE.PointLight( 0x5555ff, 3, 100 );
+		//moonLight.position.set( 100, 13.5, 50 );
+		moonLight.position.x = Moon.position.x;
+		moonLight.position.y = Moon.position.y;
+		moonLight.position.z = Moon.position.z;
 		scene.add( moonLight );
 		
 			
@@ -235,6 +240,8 @@ function setup() {
 						
 						//The moon appearing
 						Moon.material.opacity =  -(Moon.material.opacity-0.7)/colorDivisor + Moon.material.opacity;
+						moonLight.intensity = -(moonLight.intensity-2)/colorDivisor + moonLight.intensity;
+						
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -253,6 +260,7 @@ function setup() {
 						
 						//The moon appearing
 						Moon.material.opacity =  -(Moon.material.opacity-1)/colorDivisor + Moon.material.opacity;
+						moonLight.intensity = -(moonLight.intensity-4)/colorDivisor + moonLight.intensity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -269,8 +277,9 @@ function setup() {
 						Sky.G = -(Sky.G-Dawn.G)/colorDivisor + Sky.G;
 						Sky.B = -(Sky.B-Dawn.B)/colorDivisor + Sky.B;
 						
-						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-0.3)/colorDivisor + Moon.material.opacity;
+						//The moon disappearing
+						//Moon.material.opacity =  -(Moon.material.opacity-0.3)/colorDivisor + Moon.material.opacity;
+						//moonLight.intensity = -(moonLight.intensity-0.5)/colorDivisor + moonLight.intensity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -287,7 +296,8 @@ function setup() {
 						Sky.B = -(Sky.B-Day.B)/colorDivisor + Sky.B;
 						
 						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-0)/colorDivisor + Moon.material.opacity;
+						//Moon.material.opacity =  -(Moon.material.opacity-0)/colorDivisor + Moon.material.opacity;
+						//moonLight.intensity = -(moonLight.intensity-0)/colorDivisor + moonLight.intensity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -321,8 +331,12 @@ function setup() {
 							else if(e == Moon){
 								//Have the Moon Rotate sideways
 								e.rotation.y += 0.0003;
-								e.position.x = -2 +  Math.sin(step/1000)*100;
+								//e.position.x = e.position.x - Math.sin(step/75)*1.5;
+								//e.position.z = e.position.z -Math.cos(step/75)*1;
+								e.position.x = e.position.x - Math.sin(step/75)/10;
+								e.position.z = e.position.z -Math.cos(step/70)/10;
 								moonLight.position.x = e.position.x;
+								moonLight.position.z = e.position.z;
 							}
 							else if(e == BenchB){
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
