@@ -3,6 +3,7 @@ var player;
 var refresh_time = 0;
 var wait=0, direction = -1;
 
+
 function setup() {
 			// create a scene, that will hold all our elements such as objects, cameras and lights.
 			var scene = new THREE.Scene();				
@@ -12,7 +13,7 @@ function setup() {
 			camera.position.set(0,0,50);
 			scene.add(camera);
 			//Scene Background of course
-			scene.background = new THREE.Color( 0x4DD3FF );
+			//scene.background = new THREE.Color( 0x4DD3FF );
 			
 			// create a render and set the size
 			var renderer = new THREE.WebGLRenderer({ antialias: true} );
@@ -116,6 +117,29 @@ function setup() {
 		//Stop bench for now
 		//scene.add(BenchT);
 		
+		//Sky Colors
+		var Day = {
+			R:77,
+			G:223,
+			B:255
+		};
+		
+		var Sky = {
+			R:77,
+			G:223,
+			B:255,
+			TransitioningTo: "Night"
+		};
+		
+		var Night = {
+			R:23,
+			G:26,
+			B:167
+		};
+		
+		//scene.background = new THREE.Color( 0x4DD3FF );
+		scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
+		
         //add the output of the renderer to the html element
 			document.getElementById("WebGL-output").appendChild(renderer.domElement);
 			//controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -132,22 +156,36 @@ function setup() {
 
 			function renderScene(){
 				//Render steps
-					step += 0.1;
+					step = Math.round(1+step);
 					
 					//render using requestAnimationFrame
 					requestAnimationFrame(renderScene);
 					renderer.render(scene, camera);			
 					
+					//var color = new THREE.Color("rgb(77, 223, 225)");
 					
-					if(step >= 8 && step <= 20){
-						scene.background = new THREE.Color( 0x4DEFFF );
-						console.log("Changed!!!");
+					if(step%10 == 0 && Sky.TransitioningTo == "Night"){
+						Sky.R = Math.round(-(Sky.R-Night.R)/5 + Sky.R);
+						Sky.G = Math.round(-(Sky.G-Night.G)/5 + Sky.G);
+						Sky.B = Math.round(-(Sky.B-Night.B)/5 + Sky.B);
+						
+						scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
+						console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" +step);
+						
+						if(Math.abs(Sky.R-Night.R)<5 && Math.abs(Sky.G-Night.G)<5 && Math.abs(Sky.B-Night.B)<5 )
+							Sky.TransitioningTo = "Day"
 					}
-					else if(step >= 50 && step <= 100){
-						scene.background = new THREE.Color( 0x4DDFFF );
-						console.log("Changed!!!");
+					else if(step%10 == 0 && Sky.TransitioningTo == "Day"){
+						Sky.R = Math.round(-(Sky.R-Day.R)/5 + Sky.R);
+						Sky.G = Math.round(-(Sky.G-Day.G)/5 + Sky.G);
+						Sky.B = Math.round(-(Sky.B-Day.B)/5 + Sky.B);
+						
+						scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
+						console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" +step);
+						
+						if(Math.abs(Sky.R-Day.R)<5 && Math.abs(Sky.G-Day.G)<5 && Math.abs(Sky.B-Day.B)<5 )
+							Sky.TransitioningTo = "Night"
 					}
-					else scene.background = new THREE.Color( 0x4DD3FF );
 					
 					//Move all the players
 					scene.traverse(function (e) {
