@@ -5,47 +5,47 @@ var wait=0, direction = -1;
 
 
 function setup() {
-			// create a scene, that will hold all our elements such as objects, cameras and lights.
-			var scene = new THREE.Scene();				
-			
-			// create a camera, which defines where we're looking at.
-			var camera = new THREE.PerspectiveCamera(45, 800/ 500, 0.1, 1000);
-			camera.position.set(0,0,50);
-			scene.add(camera);
-			//Scene Background of course
-			//scene.background = new THREE.Color( 0x4DD3FF );
-			
-			// create a render and set the size
-			var renderer = new THREE.WebGLRenderer({ antialias: true} );
-			//renderer.setClearColor(new THREE.Color(0x4DD3FF, 1.0));
-			renderer.setClearColor(new THREE.Color(0x000000, 0.0));
-			//set the size
-			renderer.setSize(700, 700);
-			//renderer.shadowMapEnabled = true	
-			
-			//Later change this back to false
-			var endGame = true; //The Game is over and you'll have to restart
-			
-			
-			var controls = new THREE.TrackballControls( camera );
-				controls.rotateSpeed = 1.0;
-				controls.zoomSpeed = 1.2;
-				controls.panSpeed = 0.8;
-				controls.noZoom = false;
-				controls.noPan = false;
-				controls.staticMoving = true;
-				controls.dynamicDampingFactor = 0.3; 
+		// create a scene, that will hold all our elements such as objects, cameras and lights.
+		var scene = new THREE.Scene();				
+		
+		// create a camera, which defines where we're looking at.
+		var camera = new THREE.PerspectiveCamera(45, 800/ 500, 0.1, 1000);
+		camera.position.set(0,0,50);
+		scene.add(camera);
+		//Scene Background of course
+		//scene.background = new THREE.Color( 0x4DD3FF );
+		
+		// create a render and set the size
+		var renderer = new THREE.WebGLRenderer({ antialias: true} );
+		//renderer.setClearColor(new THREE.Color(0x4DD3FF, 1.0));
+		renderer.setClearColor(new THREE.Color(0x000000, 0.0));
+		//set the size
+		renderer.setSize(700, 700);
+		//renderer.shadowMapEnabled = true	
+		
+		//Later change this back to false
+		var endGame = true; //The Game is over and you'll have to restart
+		
+		
+		var controls = new THREE.TrackballControls( camera );
+			controls.rotateSpeed = 1.0;
+			controls.zoomSpeed = 1.2;
+			controls.panSpeed = 0.8;
+			controls.noZoom = false;
+			controls.noPan = false;
+			controls.staticMoving = true;
+			controls.dynamicDampingFactor = 0.3; 
 			
 			
         //add spotlight for the shadows
-			var spotLight = new THREE.SpotLight(0xffffff);
-			spotLight.position.set(0, 50, 150);
-			spotLight.castShadow = false;
-			spotLight.intensity =2;
+			var spotLight = new THREE.SpotLight(0xffffff,1);
+			spotLight.castShadow = true;
+			spotLight.intensity =4;
+			spotLight.position.set(-7.5,-1,27); //xyz
 			scene.add(spotLight);
-
 			
-			//From Pacman 3D
+			
+		//From Pacman 3D
 		var createPedals = function () {
 			return function () {
 				//Pellets lol I made this one too!!! :D
@@ -68,7 +68,6 @@ function setup() {
 			};
 		}();
 		
-		//Stop Pedals for now
 		//Pedals
 		for(var x = 0; x < 25; x++)
 			createPedals();
@@ -76,27 +75,28 @@ function setup() {
 			
 		//Loader
 		var loader = new THREE.TextureLoader();
-			loader.crossOrigin = true;
+		loader.crossOrigin = true;
 			
 		//Grass
 		var grass = loader.load( 'Images/hd-grass-background-1.jpg' );
 		grass.minFilter = THREE.LinearFilter;
-		var planeGeometry = new THREE.PlaneBufferGeometry (30, 5,0);	
-		var planeMaterial =  new THREE.MeshBasicMaterial( { map: grass, color: 0xffffff } );
+		var planeGeometry = new THREE.PlaneBufferGeometry (37.5, 15,0);	
+		var planeMaterial =  new THREE.MeshLambertMaterial( { map: grass, color: 0xffffff } );
 		var Board = new THREE.Mesh(planeGeometry, planeMaterial);
 		Board.position.set(0,-5.8,30); //xyz
-		Board.rotation.x = -0.75
+		Board.rotation.x = -1.45
+		Board.lights = true;
 		scene.add(Board);
 		
 		//Tree
 		var wood = loader.load( 'Images/tree-218738_960_720.jpg' );
 		wood.minFilter = THREE.LinearFilter;
-		var planeGeometry2 = new THREE.PlaneBufferGeometry (3.5, 7.5,0);
-		var planeMaterial2 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
-		var Tree = new THREE.Mesh(planeGeometry2, planeMaterial2);
-		Tree.position.set(-5.5,-1.25,31); //xyz
-		//REmove tree for now
-		scene.add(Tree);
+		var planeMaterial2 =  new THREE.MeshLambertMaterial( { map: wood, color: 0xffffff } );
+		var geometry = new THREE.CylinderGeometry( 1.25, 1.35, 13.5, 10 );
+		var Tree = new THREE.Mesh( geometry, planeMaterial2 );
+		Tree.position.set(-7.5,-1,27); //xyz
+		Tree.lights = true;
+		scene.add( Tree );
 		
 		//Moon
 		var moon = loader.load( 'Images/moonTexture.jpg' );
@@ -105,17 +105,28 @@ function setup() {
 		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
 		var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
 		Moon.position.set(21,13.5,3); //xyz
+		//spotLight.position.set(21, 13.5, 0);
 		Moon.material.transparent = true;
 		Moon.material.opacity = 0;
+		Moon.lights = true;
+		
 		scene.add( Moon );
 		
 		var moonLight = new THREE.PointLight( 0xffff00, 3, 100 );
 		moonLight.position.set( 21, 13.5, 2 );
 		scene.add( moonLight );
 		
-		var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-		scene.add( directionalLight );
-		directionalLight.target = Moon;
+		//var directionalLight = new THREE.DirectionalLight( 0xffffff, 4);
+		//scene.add( directionalLight );
+		//directionalLight.target = Moon;
+		
+		//Rec
+		var rectLight = new THREE.RectAreaLight( 0xffffff, 1, 10, 10 );
+		//rectLight.position.set( 5, 5, 0 );
+		scene.add( rectLight );
+		rectLight.add( Moon );
+		
+		
 		
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
@@ -156,10 +167,14 @@ function setup() {
 		};
 		
 		var Sky = {//Chaning variable
-			R:77,
-			G:223,
-			B:255,
-			TransitioningTo: "Evening"
+			//R:77,
+			//G:223,
+			//B:255,
+			//TransitioningTo: "Evening"
+			R:236,
+			G:192,
+			B:89,
+			TransitioningTo: "Night"
 		};
 		
 		var Night = {//9pm
@@ -229,7 +244,7 @@ function setup() {
 						Sky.B = -(Sky.B-Night.B)/colorDivisor + Sky.B;
 						
 						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-0.5)/colorDivisor + Moon.material.opacity;
+						Moon.material.opacity =  -(Moon.material.opacity-0.7)/colorDivisor + Moon.material.opacity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -265,7 +280,7 @@ function setup() {
 						Sky.B = -(Sky.B-Dawn.B)/colorDivisor + Sky.B;
 						
 						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-0.5)/colorDivisor + Moon.material.opacity;
+						Moon.material.opacity =  -(Moon.material.opacity-0.3)/colorDivisor + Moon.material.opacity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -315,7 +330,7 @@ function setup() {
 							}
 							else if(e == Moon){
 								//Have the Moon Rotate sideways
-								e.rotation.y += 0.0005;
+								e.rotation.y += 0.0003;
 							}
 							else if(e == BenchB){
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
