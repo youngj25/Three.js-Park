@@ -97,7 +97,26 @@ function setup() {
 		Tree.position.set(-5.5,-1.25,31); //xyz
 		//REmove tree for now
 		scene.add(Tree);
-			
+		
+		//Moon
+		var moon = loader.load( 'Images/moonTexture.jpg' );
+		moon.minFilter = THREE.LinearFilter;
+		var sphereGeometry = new THREE.SphereGeometry(5,16,16);
+		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
+		var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
+		Moon.position.set(21,13.5,3); //xyz
+		Moon.material.transparent = true;
+		Moon.material.opacity = 0;
+		scene.add( Moon );
+		
+		var moonLight = new THREE.PointLight( 0xffff00, 3, 100 );
+		moonLight.position.set( 21, 13.5, 2 );
+		scene.add( moonLight );
+		
+		var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+		scene.add( directionalLight );
+		directionalLight.target = Moon;
+		
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
 		wood.minFilter = THREE.LinearFilter;
@@ -140,7 +159,7 @@ function setup() {
 			R:77,
 			G:223,
 			B:255,
-			TransitioningTo: "Night"
+			TransitioningTo: "Evening"
 		};
 		
 		var Night = {//9pm
@@ -209,6 +228,9 @@ function setup() {
 						Sky.G = -(Sky.G-Night.G)/colorDivisor + Sky.G;
 						Sky.B = -(Sky.B-Night.B)/colorDivisor + Sky.B;
 						
+						//The moon appearing
+						Moon.material.opacity =  -(Moon.material.opacity-0.5)/colorDivisor + Moon.material.opacity;
+						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
@@ -223,6 +245,9 @@ function setup() {
 						Sky.R = -(Sky.R-MidNight.R)/colorDivisor + Sky.R;
 						Sky.G = -(Sky.G-MidNight.G)/colorDivisor + Sky.G;
 						Sky.B = -(Sky.B-MidNight.B)/colorDivisor + Sky.B;
+						
+						//The moon appearing
+						Moon.material.opacity =  -(Moon.material.opacity-1)/colorDivisor + Moon.material.opacity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -239,6 +264,9 @@ function setup() {
 						Sky.G = -(Sky.G-Dawn.G)/colorDivisor + Sky.G;
 						Sky.B = -(Sky.B-Dawn.B)/colorDivisor + Sky.B;
 						
+						//The moon appearing
+						Moon.material.opacity =  -(Moon.material.opacity-0.5)/colorDivisor + Moon.material.opacity;
+						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
@@ -252,6 +280,9 @@ function setup() {
 						Sky.R = -(Sky.R-Day.R)/colorDivisor + Sky.R;
 						Sky.G = -(Sky.G-Day.G)/colorDivisor + Sky.G;
 						Sky.B = -(Sky.B-Day.B)/colorDivisor + Sky.B;
+						
+						//The moon appearing
+						Moon.material.opacity =  -(Moon.material.opacity-0)/colorDivisor + Moon.material.opacity;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
@@ -282,24 +313,23 @@ function setup() {
 								//e.position.x = 0.009 * Math.sin(step);
 								
 							}
+							else if(e == Moon){
+								//Have the Moon Rotate sideways
+								e.rotation.y += 0.0005;
+							}
 							else if(e == BenchB){
-								//nsole.log("Trial!!");
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
 								e.position.z += 0.025 * Math.sin(step/1000);
 								e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 2;
 								//e.position.x = 0.009 * Math.sin(step);
-								
 							}
 							else if(e == BenchT){
-								//nsole.log("Trial!!");
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
 								e.position.z += 0.0025 * Math.sin(step/1000);
 								e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 1.25;
 								//e.position.x = 0.009 * Math.sin(step);
-								
 							}
 							else{ // Pedals
-									
 								if(e.name == 0){
 									e.position.y -= (0.02 + 0.01* Math.sin(step/100));
 									e.position.x -= 0.05 * Math.sin(step/100 + 1);
@@ -316,7 +346,6 @@ function setup() {
 									e.position.x -= 0.05 * Math.sin(step/100 + 0.5);
 									e.material.rotation += 0.12;
 								}
-									
 								 //console.log(step+Number(e.name));
 								 //e.material.rotation += 0.01;
 								
