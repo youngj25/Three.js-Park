@@ -42,7 +42,7 @@ function setup() {
 			spotLight.castShadow = true;
 			spotLight.intensity =4;
 			spotLight.position.set(-7.5,-1,27); //xyz
-			scene.add(spotLight);
+			//scene.add(spotLight);
 			
 			
 		//From Pacman 3D
@@ -105,28 +105,18 @@ function setup() {
 		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
 		var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
 		Moon.position.set(21,13.5,3); //xyz
-		//spotLight.position.set(21, 13.5, 0);
+		spotLight.position.set(21, 13.5, 0);
 		Moon.material.transparent = true;
 		Moon.material.opacity = 0;
-		Moon.lights = true;
+		//Moon.lights = true;
 		
 		scene.add( Moon );
 		
-		var moonLight = new THREE.PointLight( 0xffff00, 3, 100 );
+		var moonLight = new THREE.PointLight( 0x0000ff, 3, 100 );
 		moonLight.position.set( 21, 13.5, 2 );
 		scene.add( moonLight );
 		
-		//var directionalLight = new THREE.DirectionalLight( 0xffffff, 4);
-		//scene.add( directionalLight );
-		//directionalLight.target = Moon;
-		
-		//Rec
-		var rectLight = new THREE.RectAreaLight( 0xffffff, 1, 10, 10 );
-		//rectLight.position.set( 5, 5, 0 );
-		scene.add( rectLight );
-		rectLight.add( Moon );
-		
-		
+			
 		
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
@@ -331,6 +321,8 @@ function setup() {
 							else if(e == Moon){
 								//Have the Moon Rotate sideways
 								e.rotation.y += 0.0003;
+								e.position.x = -2 +  Math.sin(step/1000)*100;
+								moonLight.position.x = e.position.x;
 							}
 							else if(e == BenchB){
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
