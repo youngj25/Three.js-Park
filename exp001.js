@@ -70,8 +70,8 @@ function setup() {
 		
 		//Stop Pedals for now
 		//Pedals
-		//for(var x = 0; x < 25; x++)
-			//createPedals();
+		for(var x = 0; x < 25; x++)
+			createPedals();
 			
 			
 		//Loader
@@ -96,7 +96,7 @@ function setup() {
 		var Tree = new THREE.Mesh(planeGeometry2, planeMaterial2);
 		Tree.position.set(-5.5,-1.25,31); //xyz
 		//REmove tree for now
-		//scene.add(Tree);
+		scene.add(Tree);
 			
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
@@ -117,25 +117,44 @@ function setup() {
 		//Stop bench for now
 		//scene.add(BenchT);
 		
-		//Sky Colors
-		var Day = {
+		//Sky Colors based on times
+		var Dawn = { //4am
+			R:132,
+			G:109,
+			B:231
+		};
+		
+		var Day = { //9am
 			R:77,
 			G:223,
 			B:255
 		};
 		
-		var Sky = {
+		var Evening = {//6pm
+			R:236,
+			G:192,
+			B:89
+		};
+		
+		var Sky = {//Chaning variable
 			R:77,
 			G:223,
 			B:255,
 			TransitioningTo: "Night"
 		};
 		
-		var Night = {
-			R:23,
-			G:26,
-			B:167
+		var Night = {//9pm
+			R:25,
+			G:46,
+			B:201
 		};
+		
+		var MidNight = { //12am
+			R:8,
+			G:4,
+			B:49
+		};
+		
 		
 		//scene.background = new THREE.Color( 0x4DD3FF );
 		scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
@@ -150,7 +169,13 @@ function setup() {
 			renderer.render(scene, camera);
 			
 		//call the render function
-			var step = 0;		
+			var step = 0;
+			//backgroundInterval for the step to update the screen background
+			var backgroundInterval = 5;
+			//Divisor for the change between the colors
+			var colorDivisor  = 100;
+			
+			
 			//console.log("sad");
 			renderScene();
 
@@ -164,28 +189,80 @@ function setup() {
 					
 					//var color = new THREE.Color("rgb(77, 223, 225)");
 					
-					if(step%10 == 0 && Sky.TransitioningTo == "Night"){
-						Sky.R = Math.round(-(Sky.R-Night.R)/5 + Sky.R);
-						Sky.G = Math.round(-(Sky.G-Night.G)/5 + Sky.G);
-						Sky.B = Math.round(-(Sky.B-Night.B)/5 + Sky.B);
+					if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Evening"){
+						Sky.R = -(Sky.R-Evening.R)/colorDivisor + Sky.R;
+						Sky.G = -(Sky.G-Evening.G)/colorDivisor + Sky.G;
+						Sky.B = -(Sky.B-Evening.B)/colorDivisor + Sky.B;
 						
-						scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
-						console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" +step);
+						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(Math.abs(Sky.R-Night.R)<5 && Math.abs(Sky.G-Night.G)<5 && Math.abs(Sky.B-Night.B)<5 )
-							Sky.TransitioningTo = "Day"
-					}
-					else if(step%10 == 0 && Sky.TransitioningTo == "Day"){
-						Sky.R = Math.round(-(Sky.R-Day.R)/5 + Sky.R);
-						Sky.G = Math.round(-(Sky.G-Day.G)/5 + Sky.G);
-						Sky.B = Math.round(-(Sky.B-Day.B)/5 + Sky.B);
-						
-						scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
-						console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" +step);
-						
-						if(Math.abs(Sky.R-Day.R)<5 && Math.abs(Sky.G-Day.G)<5 && Math.abs(Sky.B-Day.B)<5 )
+						if(Math.abs(Sky.R-Evening.R)<5 && Math.abs(Sky.G-Evening.G)<5 && Math.abs(Sky.B-Evening.B)<5 ){
+							spotLight.intensity =1;
 							Sky.TransitioningTo = "Night"
+							//console.log("DAY!!!!")
+						}
+							
 					}
+					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Night"){
+						Sky.R = -(Sky.R-Night.R)/colorDivisor + Sky.R;
+						Sky.G = -(Sky.G-Night.G)/colorDivisor + Sky.G;
+						Sky.B = -(Sky.B-Night.B)/colorDivisor + Sky.B;
+						
+						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
+						
+						if(Math.abs(Sky.R-Night.R)<5 && Math.abs(Sky.G-Night.G)<5 && Math.abs(Sky.B-Night.B)<5 ){
+							spotLight.intensity =0;
+							Sky.TransitioningTo = "MidNight"
+							//console.log("DAY!!!!")
+						}
+							
+					}
+					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "MidNight"){
+						Sky.R = -(Sky.R-MidNight.R)/colorDivisor + Sky.R;
+						Sky.G = -(Sky.G-MidNight.G)/colorDivisor + Sky.G;
+						Sky.B = -(Sky.B-MidNight.B)/colorDivisor + Sky.B;
+						
+						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
+						
+						if(Math.abs(Sky.R-MidNight.R)<5 && Math.abs(Sky.G-MidNight.G)<5 && Math.abs(Sky.B-MidNight.B)<5 ){
+							spotLight.intensity =1;
+							Sky.TransitioningTo = "Dawn"
+							//console.log("DAY!!!!")
+						}
+							
+					}
+					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dawn"){
+						Sky.R = -(Sky.R-Dawn.R)/colorDivisor + Sky.R;
+						Sky.G = -(Sky.G-Dawn.G)/colorDivisor + Sky.G;
+						Sky.B = -(Sky.B-Dawn.B)/colorDivisor + Sky.B;
+						
+						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
+						
+						if(Math.abs(Sky.R-Dawn.R)<5 && Math.abs(Sky.G-Dawn.G)<5 && Math.abs(Sky.B-Dawn.B)<5 ){
+							spotLight.intensity =2;
+							Sky.TransitioningTo = "Day"
+							//console.log("NIGHT!!!!")
+						}
+					}					
+					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
+						Sky.R = -(Sky.R-Day.R)/colorDivisor + Sky.R;
+						Sky.G = -(Sky.G-Day.G)/colorDivisor + Sky.G;
+						Sky.B = -(Sky.B-Day.B)/colorDivisor + Sky.B;
+						
+						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
+						
+						if(Math.abs(Sky.R-Day.R)<5 && Math.abs(Sky.G-Day.G)<5 && Math.abs(Sky.B-Day.B)<5 ){
+							spotLight.intensity =2;
+							Sky.TransitioningTo = "Evening"
+							//console.log("NIGHT!!!!")
+						}
+					}
+					
 					
 					//Move all the players
 					scene.traverse(function (e) {
@@ -207,36 +284,36 @@ function setup() {
 							}
 							else if(e == BenchB){
 								//nsole.log("Trial!!");
-								e.rotation.x -= 0.003 * Math.sin(step/10);
-								e.position.z += 0.025 * Math.sin(step/10);
-								e.position.y = -Math.abs(1.25 * Math.sin(step/10)) - 2;
+								e.rotation.x -= 0.003 * Math.sin(step/1000);
+								e.position.z += 0.025 * Math.sin(step/1000);
+								e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 2;
 								//e.position.x = 0.009 * Math.sin(step);
 								
 							}
 							else if(e == BenchT){
 								//nsole.log("Trial!!");
-								e.rotation.x -= 0.003 * Math.sin(step/10);
-								e.position.z += 0.0025 * Math.sin(step/10);
-								e.position.y = -Math.abs(1.25 * Math.sin(step/10)) - 1.25;
+								e.rotation.x -= 0.003 * Math.sin(step/1000);
+								e.position.z += 0.0025 * Math.sin(step/1000);
+								e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 1.25;
 								//e.position.x = 0.009 * Math.sin(step);
 								
 							}
 							else{ // Pedals
 									
 								if(e.name == 0){
-									e.position.y -= (0.02 + 0.01* Math.sin(step));
-									e.position.x -= 0.05 * Math.sin(step + 1);
-									e.material.rotation = 0.6*Math.sin(step + 1);
+									e.position.y -= (0.02 + 0.01* Math.sin(step/100));
+									e.position.x -= 0.05 * Math.sin(step/100 + 1);
+									e.material.rotation = 0.6*Math.sin(step/100 + 1);
 								 }
 									
 								else if(e.name == 1){
-									e.position.y -= (0.02 + 0.01* Math.sin(step));
-									e.position.x -= 0.05 * Math.sin(step + 0.5);
-									e.material.rotation = 0.6*Math.sin(step + 0.5);
+									e.position.y -= (0.02 + 0.01* Math.sin(step/100));
+									e.position.x -= 0.05 * Math.sin(step/100 + 0.5);
+									e.material.rotation = 0.6*Math.sin(step /100+ 0.5);
 								}
 								else if(e.name == 2){
 									e.position.y -= 0.008;
-									e.position.x -= 0.05 * Math.sin(step + 0.5);
+									e.position.x -= 0.05 * Math.sin(step/100 + 0.5);
 									e.material.rotation += 0.12;
 								}
 									
