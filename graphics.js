@@ -43,8 +43,18 @@ function setup() {
 			spotLight.intensity =4;
 			spotLight.position.set(-7.5,-1,27); //xyz
 			//scene.add(spotLight);
-			
-			
+					
+		var Time = new THREEx.DynamicText2DObject();
+				Time.parameters.text= ""; //CHANGED
+				Time.parameters.font= "bolder 105px Arial";
+				Time.parameters.fillStyle= "Red";
+				Time.parameters.align = "center";
+				Time.dynamicTexture.canvas.width = 4096;
+				Time.position.set(-7.5,-5.75,37);
+				Time.scale.set(18,3,1);
+				Time.update();
+				scene.add(Time);
+  
 		//From Pacman 3D
 		var createPedals = function () {
 			return function () {
@@ -74,7 +84,6 @@ function setup() {
 		for(var x = 0; x < 25; x++)
 			createPedals();
 			
-			
 		//Loader
 		var loader = new THREE.TextureLoader();
 		loader.crossOrigin = true;
@@ -96,9 +105,50 @@ function setup() {
 		var planeMaterial2 =  new THREE.MeshLambertMaterial( { map: wood, color: 0xffffff } );
 		var geometry = new THREE.CylinderGeometry( 1.25, 1.35, 13.5, 10 );
 		var Tree = new THREE.Mesh( geometry, planeMaterial2 );
-		Tree.position.set(-7.5,-1,27); //xyz
-		Tree.lights = true;
-		scene.add( Tree );
+		//Tree.position.set(-7.5,-1,27); //xyz
+		//Tree.lights = true;
+		//scene.add( Tree );
+		
+		/**
+		var obloader = new THREE.OBJLoader();
+		
+		loader.load(
+			'Images/Tree_V10_Final.obj',
+ 			function (object){
+				
+				scene.add(object)
+				object.position.set(0.5,1,27)
+			},
+			
+			function(xhr){
+				console.log( (xhr.loaded/xhr.total * 100) + '% loaded');
+			},
+			
+			function (error){
+				console.log('An error happened');
+			}
+		);
+		
+		
+		//three.js-master/examples/models/obj/tree.obj
+		var obloader2 = new THREE.OBJLoader();
+		loader.load(
+			'../three.js-master/examples/models/obj/tree.obj',
+			function (object2){
+				
+				scene.add(object2)
+				object2 n.position.set(-7.5,1,27)
+			},
+			
+			function(xhr){
+				console.log( (xhr.loaded/xhr.total * 100) + '% loaded');
+			},
+			
+			function (error){
+				console.log('An error happened');
+			}
+		);
+		**/
 		
 		//Moon
 		var moon = loader.load( 'Images/moonTexture.jpg' );
@@ -106,34 +156,40 @@ function setup() {
 		var sphereGeometry = new THREE.SphereGeometry(5,16,16);
 		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
 		var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
-		//Moon.position.set(100,13.5,50); //xyz
 		Moon.position.set(-10,20,40); //xyz
-		//spotLight.position.set(0, 13.5, 0);
-		Moon.material.transparent = true;
-		Moon.material.opacity = 1;
-		
 		scene.add( Moon );
-		
-		var moonLight = new THREE.PointLight( 0x5555ff, 3, 100 );
-		//moonLight.position.set( 100, 13.5, 50 );
+		//MoonLight
+		var moonLight = new THREE.PointLight( 0x5555ff, 3.25, 100 );
 		moonLight.position.x = Moon.position.x;
 		moonLight.position.y = Moon.position.y;
 		moonLight.position.z = Moon.position.z;
 		scene.add( moonLight );
 		
-		
-		//Sun
-		var sun = loader.load( 'Images/moonTexture.jpg' );
+		//Sun //Credits: https://i.ytimg.com/vi/nUWfZfsW7uU/maxresdefault.jpg
+		var sun = loader.load( 'Images/sunTexture.jpg' );
 		sun.minFilter = THREE.LinearFilter;
 		var sphereGeometry = new THREE.SphereGeometry(5,16,16);
-		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xff0000 } );
+		var sphereMaterial = new THREE.MeshBasicMaterial(  { map: sun, color: 0xffff00 } );
 		var Sun = new THREE.Mesh( sphereGeometry, sphereMaterial );
-		//Moon.position.set(100,13.5,50); //xyz
-		Sun.position.set(10,20,-40); //xyz
-		//spotLight.position.set(0, 13.5, 0);
-		Sun.material.transparent = true;
-		Sun.material.opacity = 1;
-			
+		Sun.position.set(-10,20,40); //xyz
+		scene.add( Sun );
+		var sunLight = new THREE.PointLight( 0xffffff, 4, 100 );
+		sunLight.position.x = Sun.position.x;
+		sunLight.position.y = Sun.position.y;
+		sunLight.position.z = Sun.position.z;
+		scene.add( sunLight );
+		
+		//Dawn Light
+		var dawnLight = new THREE.PointLight( 0x00ff00, 2, 100 );
+		//scene.add( dawnLight );
+		
+		//Dusk Light
+		var duskLight = new THREE.PointLight( 0xff0000, 2.5, 100 );
+		//scene.add( duskLight );
+		
+		var SetLightSource = new THREE.PointLight( 0x000000, 0.15, 100 );
+		SetLightSource.position.set(0,30,20); //xyz
+		scene.add( SetLightSource );
 		
 		//Bench
 		var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
@@ -158,42 +214,56 @@ function setup() {
 		var Dawn = { //4am
 			R:132,
 			G:109,
-			B:231
+			B:231,
+			LightR:5,
+			LightG:0,
+			LightB:20
 		};
 		
 		var Day = { //9am
 			R:77,
 			G:223,
-			B:255
+			B:255,
+			LightR:10,
+			LightG:15,
+			LightB:15
 		};
 		
 		var Dusk = {//6pm
-			R:236,
-			G:192,
-			B:89
-		};
+			R:240,
+			G:128,
+			B:128,
+			LightR:9,
+			LightG:4,
+			LightB:4
+		}; //
 		
 		var Sky = {//Chaning variable
-			//R:77,
-			//G:223,
-			//B:255,
-			//TransitioningTo: "Dusk"
-			R:8,
-			G:4,
-			B:49,
-			TransitioningTo: "MidNight"
+			R:77,
+			G:223,
+			B:255,
+			LightR:10,
+			LightG:15,
+			LightB:15,
+			TransitioningTo: "Day"
 		};
 		
 		var Night = {//9pm
 			R:25,
 			G:46,
-			B:201
+			B:105,
+			LightR:0,
+			LightG:0,
+			LightB:0
 		};
 		
 		var MidNight = { //12am
-			R:8,
-			G:4,
-			B:49
+			R:12,
+			G:8,
+			B:26,
+			LightR:0,
+			LightG:0,
+			LightB:1
 		};
 		
 		
@@ -210,7 +280,8 @@ function setup() {
 			renderer.render(scene, camera);
 			
 		//call the render function
-			var step = 0;
+			//var step = 0;
+			var step = 11000;
 			//backgroundInterval for the step to update the screen background
 			var backgroundInterval = 5;
 			//Divisor for the change between the colors
@@ -231,96 +302,114 @@ function setup() {
 					//var color = new THREE.Color("rgb(77, 223, 225)");
 					
 					if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dusk"){
-						Sky.R = -(Sky.R-Dusk.R)/colorDivisor + Sky.R;
-						Sky.G = -(Sky.G-Dusk.G)/colorDivisor + Sky.G;
-						Sky.B = -(Sky.B-Dusk.B)/colorDivisor + Sky.B;
+						Sky.R = -(Sky.R-Dusk.R)/(1500/backgroundInterval) + Sky.R;
+						Sky.G = -(Sky.G-Dusk.G)/(1500/backgroundInterval) + Sky.G;
+						Sky.B = -(Sky.B-Dusk.B)/(1500/backgroundInterval) + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(step >= 21000 ){
+						//The SetLightSource becomes purple for dawn color
+						Sky.LightR = -(Sky.LightR-Dusk.LightR)/(1500/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Dusk.LightG)/(1500/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Dusk.LightB)/(1500/backgroundInterval) + Sky.LightB;
+						
+						SetLightSource.color.r = Sky.LightR;
+						SetLightSource.color.g = Sky.LightG;
+						SetLightSource.color.b = Sky.LightB;
+						
+						
+						if(step >= 17000 ){
 							Sky.TransitioningTo = "Night"
+							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 							
 					}
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Night"){
-						Sky.R = -(Sky.R-Night.R)/colorDivisor + Sky.R;
-						Sky.G = -(Sky.G-Night.G)/colorDivisor + Sky.G;
-						Sky.B = -(Sky.B-Night.B)/colorDivisor + Sky.B;
-						
-						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-0.7)/colorDivisor + Moon.material.opacity;
-						moonLight.intensity = -(moonLight.intensity-2)/colorDivisor + moonLight.intensity;
-						
+						Sky.R = -(Sky.R-Night.R)/(1000/backgroundInterval)  + Sky.R;
+						Sky.G = -(Sky.G-Night.G)/(1000/backgroundInterval)  + Sky.G;
+						Sky.B = -(Sky.B-Night.B)/(1000/backgroundInterval)  + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(step >= 24000 ){
-							spotLight.intensity =0;
+						//The SetLightSource becomes purple for dawn color
+						Sky.LightR = -(Sky.LightR-Night.LightR)/(1000/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Night.LightG)/(1000/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Night.LightB)/(1000/backgroundInterval) + Sky.LightB;
+						
+						SetLightSource.color.r = Sky.LightR;
+						SetLightSource.color.g = Sky.LightG;
+						SetLightSource.color.b = Sky.LightB;
+						
+						
+						if(step >= 22000 ){
 							Sky.TransitioningTo = "MidNight"
-							step = 0;
-							//console.log("DAY!!!!")
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 							
 					}
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "MidNight"){
-						Sky.R = -(Sky.R-MidNight.R)/(6000/backgroundInterval) + Sky.R;
-						Sky.G = -(Sky.G-MidNight.G)/(6000/backgroundInterval) + Sky.G;
-						Sky.B = -(Sky.B-MidNight.B)/(6000/backgroundInterval) + Sky.B;
-						
-						//The moon appearing
-						Moon.material.opacity =  -(Moon.material.opacity-1)/colorDivisor + Moon.material.opacity;
-						moonLight.intensity = -(moonLight.intensity-4)/colorDivisor + moonLight.intensity;
+						Sky.R = -(Sky.R-MidNight.R)/(2000/backgroundInterval) + Sky.R;
+						Sky.G = -(Sky.G-MidNight.G)/(2000/backgroundInterval) + Sky.G;
+						Sky.B = -(Sky.B-MidNight.B)/(2000/backgroundInterval) + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(step >= 3000 ){
-							spotLight.intensity =1;
+						//The SetLightSource becomes purple for dawn color
+						Sky.LightR = -(Sky.LightR-MidNight.LightR)/(2000/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-MidNight.LightG)/(2000/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-MidNight.LightB)/(2000/backgroundInterval) + Sky.LightB;
+						
+						SetLightSource.color.r = Sky.LightR;
+						SetLightSource.color.g = Sky.LightG;
+						SetLightSource.color.b = Sky.LightB;
+						
+						if(step>=24000) step = 0;
+						
+						if(step >= 4500 && step <18000) {
 							Sky.TransitioningTo = "Dawn"
-							//console.log("DAY!!!!")
 							console.log( "Moving towards " + Sky.TransitioningTo);
-						//
 						}
 							
 					}
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dawn"){
-						Sky.R = -(Sky.R-Dawn.R)/(3000/backgroundInterval) + Sky.R;
-						Sky.G = -(Sky.G-Dawn.G)/(3000/backgroundInterval) + Sky.G;
-						Sky.B = -(Sky.B-Dawn.B)/(3000/backgroundInterval) + Sky.B;
-						
-						//The moon disappearing
-						//Moon.material.opacity =  -(Moon.material.opacity-0.3)/colorDivisor + Moon.material.opacity;
-						//moonLight.intensity = -(moonLight.intensity-0.5)/colorDivisor + moonLight.intensity;
+						Sky.R = -(Sky.R-Dawn.R)/(2000/backgroundInterval) + Sky.R;
+						Sky.G = -(Sky.G-Dawn.G)/(2000/backgroundInterval) + Sky.G;
+						Sky.B = -(Sky.B-Dawn.B)/(2000/backgroundInterval) + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(step >= 9000 ){
-							spotLight.intensity =2;
+						//The SetLightSource becomes purple for dawn color
+						Sky.LightR = -(Sky.LightR-Dawn.LightR)/(2000/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Dawn.LightG)/(2000/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Dawn.LightB)/(2000/backgroundInterval) + Sky.LightB;
+						
+						SetLightSource.color.r = Sky.LightR;
+						SetLightSource.color.g = Sky.LightG;
+						SetLightSource.color.b = Sky.LightB;
+						
+						if(step >= 6300 ){
 							Sky.TransitioningTo = "Day"
-							//console.log("NIGHT!!!!")
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 					}					
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
-						Sky.R = -(Sky.R-Day.R)/colorDivisor + Sky.R;
-						Sky.G = -(Sky.G-Day.G)/colorDivisor + Sky.G;
-						Sky.B = -(Sky.B-Day.B)/colorDivisor + Sky.B;
-						
-						//The moon appearing
-						//Moon.material.opacity =  -(Moon.material.opacity-0)/colorDivisor + Moon.material.opacity;
-						//moonLight.intensity = -(moonLight.intensity-0)/colorDivisor + moonLight.intensity;
+						Sky.R = -(Sky.R-Day.R)/(3500/backgroundInterval)  + Sky.R;
+						Sky.G = -(Sky.G-Day.G)/(3500/backgroundInterval)  + Sky.G;
+						Sky.B = -(Sky.B-Day.B)/(3500/backgroundInterval)  + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-						//console.log( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")");
 						
-						if(step >= 12000 ){
-							spotLight.intensity =2;
+						//The SetLightSource becomes purple for dawn color
+						Sky.LightR = -(Sky.LightR-Day.LightR)/(3500/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Day.LightG)/(3500/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Day.LightB)/(3500/backgroundInterval) + Sky.LightB;
+						
+						SetLightSource.color.r = Sky.LightR;
+						SetLightSource.color.g = Sky.LightG;
+						SetLightSource.color.b = Sky.LightB;
+						
+						if(step >= 13500 && step <23000 ){
 							Sky.TransitioningTo = "Dusk"
-							//console.log("NIGHT!!!!")
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 					}
@@ -347,20 +436,27 @@ function setup() {
 							else if(e == Moon){
 								//Have the Moon Rotate sideways
 								e.rotation.y += 0.003;
-								//e.position.x = e.position.x - Math.sin(step/75)*1.5;
-								//e.position.z = e.position.z -Math.cos(step/75)*1;
-								e.position.x = - Math.sin( Math.PI * (step-500)/12000)*140;
+								e.position.x = - Math.sin( Math.PI * (step-1000)/12000)*140;
 								e.position.z =65 - Math.cos( Math.PI * step/12000)*80;
 								moonLight.position.x = e.position.x;
 								moonLight.position.z = e.position.z;
 							}
 							else if(e == Sun){
-								//Have the Moon Rotate sideways
-								e.rotation.y += 0.003;
-								//e.position.x = e.position.x - Math.sin(step/75)*1.5;
-								//e.position.z = e.position.z -Math.cos(step/75)*1;
-								e.position.x = - Math.sin( Math.PI * (step-6500)/12000)*140;
-								e.position.z =65 - Math.cos( Math.PI * step-6000/12000)*80;
+								e.rotation.z += 0.003;
+								e.position.x =  Math.sin( Math.PI * (step-1000)/12000)*140;
+								e.position.z =65 + Math.cos( Math.PI * step/12000)*80;
+								sunLight.position.x = e.position.x;
+								sunLight.position.z = e.position.z;
+							}
+							else if(e == dawnLight){
+								//To keep the material lit
+								e.position.x =  Math.sin( Math.PI * (step+5000)/12000)*140;
+								e.position.z =65 + Math.cos( Math.PI * (step+1500)/12000)*80;
+							}
+							else if(e == duskLight){
+								//To keep the material lit
+								e.position.x =  Math.sin( Math.PI * (step-4000)/12000)*140;
+								e.position.z =65 + Math.cos( Math.PI * (step-3000)/12000)*80;
 							}
 							else if(e == BenchB){
 								e.rotation.x -= 0.003 * Math.sin(step/1000);
@@ -374,7 +470,25 @@ function setup() {
 								e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 1.25;
 								//e.position.x = 0.009 * Math.sin(step);
 							}
-							else{ // Pedals
+							else if(e == Time){
+								var hours = Math.floor(((step-1000)/1000)%12)+1;
+								if(hours == 0) hours =1;
+								
+								var minutes = Math.floor(((step%1000)/1000)*60);
+								
+								if( minutes < 10 && step>=12000) e.parameters.text= hours+":0"+minutes+" PM";
+								else if( minutes < 10 && step<12000) e.parameters.text= hours+":0"+minutes+" AM";
+								else if( minutes >= 10 && step>=12000) e.parameters.text= hours+":"+minutes+" PM";
+								else e.parameters.text= hours+":"+minutes+" AM"; //CHANGED
+								
+								if(e.parameters.fillStyle == "Red") console.log(e)
+								
+								e.parameters.fillStyle= "White";
+								
+								e.update();
+								
+							}
+							else if(e != THREE.PointLight){ // Pedals
 								if(e.name == 0){
 									e.position.y -= (0.02 + 0.01* Math.sin(step/120));
 									e.position.x -= 0.05 * Math.sin(step/120 + 1);
@@ -383,8 +497,8 @@ function setup() {
 									
 								else if(e.name == 1){
 									e.position.y -= (0.02 + 0.01* Math.sin(step/120));
-									e.position.x -= 0.05 * Math.sin(step/120 + 0.5);
-									e.material.rotation = 0.6*Math.sin(step /120+ 0.5);
+									e.position.x -= 0.05 * Math.cos(step/120 + 0.5);
+									e.material.rotation = 0.6*Math.cos(step /120+ 0.5);
 								}
 								else if(e.name == 2){
 									e.position.y -= 0.008;
