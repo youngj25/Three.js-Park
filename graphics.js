@@ -43,8 +43,7 @@ function setup() {
 			spotLight.intensity =4;
 			spotLight.position.set(-7.5,-1,27); //xyz
 			//scene.add(spotLight);
-			
-		
+					
 		var Time = new THREEx.DynamicText2DObject();
 				Time.parameters.text= ""; //CHANGED
 				Time.parameters.font= "bolder 105px Arial";
@@ -55,8 +54,7 @@ function setup() {
 				Time.scale.set(18,3,1);
 				Time.update();
 				scene.add(Time);
-				
-		
+  
 		//From Pacman 3D
 		var createPedals = function () {
 			return function () {
@@ -151,7 +149,6 @@ function setup() {
 			}
 		);
 		**/
-		
 		
 		//Moon
 		var moon = loader.load( 'Images/moonTexture.jpg' );
