@@ -2,7 +2,7 @@ var socket;
 var player;
 var refresh_time = 0;
 var wait=0, direction = -1;
-
+var Time;
 
 function setup() {
 		// create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -43,18 +43,20 @@ function setup() {
 			spotLight.intensity =4;
 			spotLight.position.set(-7.5,-1,27); //xyz
 			//scene.add(spotLight);
-					
-		var Time = new THREEx.DynamicText2DObject();
-				Time.parameters.text= ""; //CHANGED
-				Time.parameters.font= "bolder 105px Arial";
-				Time.parameters.fillStyle= "Red";
-				Time.parameters.align = "center";
-				Time.dynamicTexture.canvas.width = 4096;
-				Time.position.set(-7.5,-5.75,37);
-				Time.scale.set(18,3,1);
-				Time.update();
-				scene.add(Time);
-  
+			
+		
+		Time = new THREEx.DynamicText2DObject();
+		Time.parameters.text= ""; //CHANGED
+		Time.parameters.font= "bolder 105px Arial";
+		Time.parameters.fillStyle= "Red";
+		Time.parameters.align = "center";
+		Time.dynamicTexture.canvas.width = 4096;
+		Time.position.set(-7.5,-5.75,37);
+		Time.scale.set(18,3,1);
+		Time.update();
+		scene.add(Time);
+		
+		
 		//From Pacman 3D
 		var createPedals = function () {
 			return function () {
@@ -71,7 +73,7 @@ function setup() {
 				//Pellets.scale.set(0.5,0.5,1);
 				Pellets.material.lights = true;
 				
-				Pellets.name = Math.floor(Math.random()*3);
+				Pellets.name = Math.floor(Math.random()*5);
 				//console.log(Pellets.name);
 				Pellets.position.set(Math.floor(Math.random()*20)-5, //X
 								Math.floor(Math.random()*15)-5, //Y
@@ -149,6 +151,7 @@ function setup() {
 			}
 		);
 		**/
+		
 		
 		//Moon
 		var moon = loader.load( 'Images/moonTexture.jpg' );
@@ -230,12 +233,12 @@ function setup() {
 		};
 		
 		var Dusk = {//6pm
-			R:240,
-			G:128,
-			B:128,
+			R:255,
+			G:193,
+			B:151,
 			LightR:9,
 			LightG:4,
-			LightB:4
+			LightB:3
 		}; //
 		
 		var Sky = {//Chaning variable
@@ -252,9 +255,9 @@ function setup() {
 			R:25,
 			G:46,
 			B:105,
-			LightR:0,
-			LightG:0,
-			LightB:0
+			LightR:2,
+			LightG:2,
+			LightB:5
 		};
 		
 		var MidNight = { //12am
@@ -288,7 +291,7 @@ function setup() {
 			var colorDivisor  = 100;
 			
 			
-			//console.log("sad");
+			//Free Rendering... it will run and run and run as much as it wants
 			renderScene();
 
 			function renderScene(){
@@ -302,47 +305,49 @@ function setup() {
 					//var color = new THREE.Color("rgb(77, 223, 225)");
 					
 					if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dusk"){
-						Sky.R = -(Sky.R-Dusk.R)/(1500/backgroundInterval) + Sky.R;
-						Sky.G = -(Sky.G-Dusk.G)/(1500/backgroundInterval) + Sky.G;
-						Sky.B = -(Sky.B-Dusk.B)/(1500/backgroundInterval) + Sky.B;
+						Sky.R = -(Sky.R-Dusk.R)/(750/backgroundInterval) + Sky.R;
+						Sky.G = -(Sky.G-Dusk.G)/(750/backgroundInterval) + Sky.G;
+						Sky.B = -(Sky.B-Dusk.B)/(750/backgroundInterval) + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						
 						//The SetLightSource becomes purple for dawn color
-						Sky.LightR = -(Sky.LightR-Dusk.LightR)/(1500/backgroundInterval) + Sky.LightR;
-						Sky.LightG = -(Sky.LightG-Dusk.LightG)/(1500/backgroundInterval) + Sky.LightG;
-						Sky.LightB = -(Sky.LightB-Dusk.LightB)/(1500/backgroundInterval) + Sky.LightB;
+						Sky.LightR = -(Sky.LightR-Dusk.LightR)/(750/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Dusk.LightG)/(750/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Dusk.LightB)/(750/backgroundInterval) + Sky.LightB;
 						
 						SetLightSource.color.r = Sky.LightR;
 						SetLightSource.color.g = Sky.LightG;
 						SetLightSource.color.b = Sky.LightB;
 						
 						
-						if(step >= 17000 ){
-							Sky.TransitioningTo = "Night"
+						if(step >= 19000 ){
+							Sky.TransitioningTo = "Night";
+							Time.parameters.fillStyle= "White";
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 							
 					}
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Night"){
-						Sky.R = -(Sky.R-Night.R)/(1000/backgroundInterval)  + Sky.R;
-						Sky.G = -(Sky.G-Night.G)/(1000/backgroundInterval)  + Sky.G;
-						Sky.B = -(Sky.B-Night.B)/(1000/backgroundInterval)  + Sky.B;
+						Sky.R = -(Sky.R-Night.R)/(2000/backgroundInterval)  + Sky.R;
+						Sky.G = -(Sky.G-Night.G)/(2000/backgroundInterval)  + Sky.G;
+						Sky.B = -(Sky.B-Night.B)/(2000/backgroundInterval)  + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						
 						//The SetLightSource becomes purple for dawn color
-						Sky.LightR = -(Sky.LightR-Night.LightR)/(1000/backgroundInterval) + Sky.LightR;
-						Sky.LightG = -(Sky.LightG-Night.LightG)/(1000/backgroundInterval) + Sky.LightG;
-						Sky.LightB = -(Sky.LightB-Night.LightB)/(1000/backgroundInterval) + Sky.LightB;
+						Sky.LightR = -(Sky.LightR-Night.LightR)/(2000/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Night.LightG)/(2000/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Night.LightB)/(2000/backgroundInterval) + Sky.LightB;
 						
 						SetLightSource.color.r = Sky.LightR;
 						SetLightSource.color.g = Sky.LightG;
 						SetLightSource.color.b = Sky.LightB;
 						
 						
-						if(step >= 22000 ){
-							Sky.TransitioningTo = "MidNight"
+						if(step >= 23000 ){
+							Sky.TransitioningTo = "MidNight";
+							Time.parameters.fillStyle= "White";
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 							
@@ -367,6 +372,7 @@ function setup() {
 						
 						if(step >= 4500 && step <18000) {
 							Sky.TransitioningTo = "Dawn"
+							Time.parameters.fillStyle= "Blue";
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
 							
@@ -393,22 +399,22 @@ function setup() {
 						}
 					}					
 					else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
-						Sky.R = -(Sky.R-Day.R)/(3500/backgroundInterval)  + Sky.R;
-						Sky.G = -(Sky.G-Day.G)/(3500/backgroundInterval)  + Sky.G;
-						Sky.B = -(Sky.B-Day.B)/(3500/backgroundInterval)  + Sky.B;
+						Sky.R = -(Sky.R-Day.R)/(1000/backgroundInterval)  + Sky.R;
+						Sky.G = -(Sky.G-Day.G)/(1000/backgroundInterval)  + Sky.G;
+						Sky.B = -(Sky.B-Day.B)/(1000/backgroundInterval)  + Sky.B;
 						
 						scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 						
 						//The SetLightSource becomes purple for dawn color
-						Sky.LightR = -(Sky.LightR-Day.LightR)/(3500/backgroundInterval) + Sky.LightR;
-						Sky.LightG = -(Sky.LightG-Day.LightG)/(3500/backgroundInterval) + Sky.LightG;
-						Sky.LightB = -(Sky.LightB-Day.LightB)/(3500/backgroundInterval) + Sky.LightB;
+						Sky.LightR = -(Sky.LightR-Day.LightR)/(1000/backgroundInterval) + Sky.LightR;
+						Sky.LightG = -(Sky.LightG-Day.LightG)/(1000/backgroundInterval) + Sky.LightG;
+						Sky.LightB = -(Sky.LightB-Day.LightB)/(1000/backgroundInterval) + Sky.LightB;
 						
 						SetLightSource.color.r = Sky.LightR;
 						SetLightSource.color.g = Sky.LightG;
 						SetLightSource.color.b = Sky.LightB;
 						
-						if(step >= 13500 && step <23000 ){
+						if(step >= 16500 ){
 							Sky.TransitioningTo = "Dusk"
 							console.log( "Moving towards " + Sky.TransitioningTo);
 						}
@@ -504,6 +510,18 @@ function setup() {
 									e.position.y -= 0.008;
 									e.position.x -= 0.05 * Math.sin(step/120 + 0.5);
 									e.material.rotation += 0.12;
+								}
+								else if(e.name == 3){
+									e.position.y -= 0.0075;
+									e.position.z -= 0.05 * Math.sin(step/120 + 0.5)/ 5;
+									e.position.x -= 0.05 * Math.sin(step/120 + 0.5)/5;
+									e.material.rotation = Math.sin(step/120 + 0.5);;
+								}
+								else if(e.name == 4){
+									e.position.y -= 0.0085;
+									e.position.z += 0.075 * Math.sin(step/120 + 0.5)/ 5;
+									e.position.x -= 0.05 * Math.sin(step/120 + 0.5)/5;
+									e.material.rotation = Math.sin(step/120 + 0.5);;
 								}
 								 //console.log(step+Number(e.name));
 								 //e.material.rotation += 0.01;
