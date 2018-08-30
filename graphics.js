@@ -213,6 +213,49 @@ function setup() {
 		//Stop bench for now
 		//scene.add(BenchT);
 		
+		//The KEyboard Commands
+		var onKeyDown = function(event) {
+			if (event.keyCode == 38){ //Up Arrow
+				Sky.TransitioningTo = "Day";
+				console.log("Day!");
+				step = 7000;
+			}
+			else if (event.keyCode == 39){ //Right Arrow
+				Sky.TransitioningTo = "Dusk";
+				console.log("Dusk!");
+				step = 15000;
+			}
+			else if (event.keyCode == 40){ //Down Arrow
+				Sky.TransitioningTo = "Night";
+				console.log("Night!");
+				step = 20000;
+			}
+			else if (event.keyCode == 37){ //Left Arrow
+				Sky.TransitioningTo = "MidNight";
+				console.log("MidNight!");
+				step = 22000;
+			}
+			else if (event.keyCode == 37){ //Left Arrow
+				var d = new Date();
+				step = 22000;
+			}
+			
+			var d = new Date();
+			
+		}
+		document.addEventListener('keydown', onKeyDown, false);	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//Sky Colors based on times
 		var Dawn = { //4am
 			R:132,
@@ -269,11 +312,11 @@ function setup() {
 			LightB:1
 		};
 		
-		
 		//scene.background = new THREE.Color( 0x4DD3FF );
 		scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
 		
-        //add the output of the renderer to the html element
+		
+		//add the output of the renderer to the html element
 			document.getElementById("WebGL-output").appendChild(renderer.domElement);
 			//controls = new THREE.OrbitControls(camera, renderer.domElement);
 			
@@ -478,7 +521,7 @@ function setup() {
 							}
 							else if(e == Time){
 								var hours = Math.floor(((step-1000)/1000)%12)+1;
-								if(hours == 0) hours =1;
+								if(hours == 0) hours =12;
 								
 								var minutes = Math.floor(((step%1000)/1000)*60);
 								
@@ -519,7 +562,7 @@ function setup() {
 								}
 								else if(e.name == 4){
 									e.position.y -= 0.0085;
-									e.position.z += 0.075 * Math.sin(step/120 + 0.5)/ 5;
+									e.position.z += 0.125 * Math.sin(step/120 + 0.5)/5;
 									e.position.x -= 0.05 * Math.sin(step/120 + 0.5)/5;
 									e.material.rotation = Math.sin(step/120 + 0.5);;
 								}
