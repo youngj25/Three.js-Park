@@ -91,11 +91,22 @@ function setup() {
 	 //Pedals
 	 for(var x = 0; x < 25; x++)
 		 createPedals();
+	 
+	//Audio
+	var NightTheme = new Audio('Audio/Night - [Rune Factory Frontier].mp3');
 	
-	console.log("Start:");
-	console.log(Pellets);
+	
+	NightTheme.volume=0.0;
+	//NightTheme.Audio.setLoop(true);
+	console.log(NightTheme);
+	NightTheme.play();
 	
 	
+	var SummerTheme = new Audio('Audio/Summer - [Rune Factory Frontier].mp3');
+	SummerTheme.volume=0.0;
+	
+	var SpringTheme = new Audio('Audio/Spring - [Rune Factory Frontier].mp3');
+	SpringTheme.volume=0.0;
 	
 		
 	 //Loader
@@ -276,7 +287,10 @@ function setup() {
 		 PedalR:255,
 		 PedalG:85,
 		 PedalB:153,
-		 TransitioningTo: "Night"
+		 TransitioningTo: "Night",
+		 NightTheme:0,
+		 SummerTheme:0,
+		 SpringTheme:0
 	 };
 	
 	 var Night = {//9pm
@@ -356,7 +370,8 @@ function setup() {
 				 Sky.PedalG = -(Sky.PedalG-Dusk.PedalG)/(4000/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-Dusk.PedalB)/(4000/backgroundInterval) + Sky.PedalB;
 				
-				
+				 
+				 
 				 if(step >= 17500 ){
 					 Sky.TransitioningTo = "Night";
 					 console.log( "Moving towards " + Sky.TransitioningTo);
@@ -384,17 +399,16 @@ function setup() {
 				 Sky.PedalR = -(Sky.PedalR-Night.PedalR)/(2750/backgroundInterval) + Sky.PedalR;
 				 Sky.PedalG = -(Sky.PedalG-Night.PedalG)/(2750/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-Night.PedalB)/(2750/backgroundInterval) + Sky.PedalB;
-		
+				
+				//Audio
+				if(Sky.NightTheme < 0.35){
+					 Sky.NightTheme +=  0.0005;
+					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
+					 //console.log(NightTheme);					 
+				 }
 				
 				if(step >= 22000 ){
 					Sky.TransitioningTo = "MidNight";
-					//Timez.parameters.fillStyle= "Orange"; //Orange 
-					//Timez.update();
-					//scene.add(Timez);
-					
-					//CountDown
-					//CountDown.parameters.fillStyle= "Yellow"; //Light Green
-					//CountDown.update();
 					
 					console.log( "Moving towards " + Sky.TransitioningTo);
 				}
@@ -422,19 +436,21 @@ function setup() {
 				 Sky.PedalB = -(Sky.PedalB-MidNight.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
 				
 				
-				if(step>=24000) step = 0;
+				 if(Sky.NightTheme < 0.5){
+					 Sky.NightTheme +=  0.0005;
+					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
+					 //console.log(NightTheme);					 
+				 }
 				
-				if(step >= 4500 && step <18000) {
-					Sky.TransitioningTo = "Dawn"
-					//Timez.parameters.fillStyle= "Blue";
+				 if(step>=24000) step = 0;
+				
+				 if(step >= 4500 && step <18000) {
+					 Sky.TransitioningTo = "Dawn";
+					 SpringTheme.play();
 					
-					//CountDown
-					//CountDown.parameters.fillStyle= "Orange"; //Light Green
-					//CountDown.update();
-					
-					console.log( "Moving towards " + Sky.TransitioningTo);
-				}
-			}
+					 console.log( "Moving towards " + Sky.TransitioningTo);
+				 }
+			 }
 			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dawn"){
 				Sky.R = -(Sky.R-Dawn.R)/(2000/backgroundInterval) + Sky.R;
 				Sky.G = -(Sky.G-Dawn.G)/(2000/backgroundInterval) + Sky.G;
@@ -456,37 +472,52 @@ function setup() {
 				 Sky.PedalG = -(Sky.PedalG-Dawn.PedalG)/(2000/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-Dawn.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
 				
+				 //Audio
+				 if(Sky.NightTheme > 0){
+					Sky.NightTheme -=  0.0015;
+					NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
+					if( Sky.NightTheme <= 0 ){
+						Sky.NightTheme =  0;
+						NightTheme.stop();
+					}
+				 }
+				 
+				 if(Sky.SpringTheme < 0.35){
+					 Sky.SpringTheme +=  0.0005;
+					 SpringTheme.volume= Math.floor(Sky.SpringTheme*10)/10;
+					 //console.log(SpringTheme);					 
+				 }
+				
+				
 				if(step >= 6500 ){
 					Sky.TransitioningTo = "Day"
 					console.log( "Moving towards " + Sky.TransitioningTo);
 				}
 			}					
 			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
-				Sky.R = -(Sky.R-Day.R)/(4500/backgroundInterval)  + Sky.R;
-				Sky.G = -(Sky.G-Day.G)/(4500/backgroundInterval)  + Sky.G;
-				Sky.B = -(Sky.B-Day.B)/(4500/backgroundInterval)  + Sky.B;
+				Sky.R = -(Sky.R-Day.R)/(2500/backgroundInterval)  + Sky.R;
+				Sky.G = -(Sky.G-Day.G)/(2500/backgroundInterval)  + Sky.G;
+				Sky.B = -(Sky.B-Day.B)/(2500/backgroundInterval)  + Sky.B;
 				
 				scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 				
 				//The SetLightSource becomes purple for dawn color
-				Sky.LightR = -(Sky.LightR-Day.LightR)/(4500/backgroundInterval) + Sky.LightR;
-				Sky.LightG = -(Sky.LightG-Day.LightG)/(4500/backgroundInterval) + Sky.LightG;
-				Sky.LightB = -(Sky.LightB-Day.LightB)/(4500/backgroundInterval) + Sky.LightB;
+				Sky.LightR = -(Sky.LightR-Day.LightR)/(2500/backgroundInterval) + Sky.LightR;
+				Sky.LightG = -(Sky.LightG-Day.LightG)/(2500/backgroundInterval) + Sky.LightG;
+				Sky.LightB = -(Sky.LightB-Day.LightB)/(2500/backgroundInterval) + Sky.LightB;
 				
 				SetLightSource.color.r = Sky.LightR;
 				SetLightSource.color.g = Sky.LightG;
 				SetLightSource.color.b = Sky.LightB;
 				
 				 //Pedals
-				 Sky.PedalR = -(Sky.PedalR-Day.PedalR)/(4500/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Day.PedalG)/(4500/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Day.PedalB)/(4500/backgroundInterval) + Sky.PedalB;
+				 Sky.PedalR = -(Sky.PedalR-Day.PedalR)/(2500/backgroundInterval) + Sky.PedalR;
+				 Sky.PedalG = -(Sky.PedalG-Day.PedalG)/(2500/backgroundInterval) + Sky.PedalG;
+				 Sky.PedalB = -(Sky.PedalB-Day.PedalB)/(2500/backgroundInterval) + Sky.PedalB;
 				
 				if(step >= 13500 ){
 					Sky.TransitioningTo = "Dusk"
 					console.log( "Moving towards " + Sky.TransitioningTo);
-					//Timez.parameters.fillStyle= "Orange"; //Orange 
-					Timez.update();
 				}
 			}
 				
