@@ -1,87 +1,109 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>Exp1</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
-	<script type="text/javascript" src="../three.js-master/examples/js/libs/dat.gui.min.js"></script>
+	 <head>
+		 <title>Cherry Blossom Park</title>
+		 <!-- Three.js -->
+		 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+		 <script type="text/javascript" src="../three.js-master/examples/js/libs/dat.gui.min.js"></script>
+		 <script type="text/javascript" src="../three.js-master/examples/js/controls/OrbitControls.js"></script>
+		 <script type="text/javascript" src="../three.js-master/examples/js/controls/DragControls.js"></script>
+		 <script type="text/javascript" src="../three.js-master/examples/js/controls/TrackballControls.js"></script>
+		 <script type="text/javascript" src="../three.js-master/examples/js/lights/RectAreaLightUniformsLib.js"></script>
+		 <!-- Text -->
+		 <script src="../threex.dynamictexture-master/threex.dynamictexture.js"></script>
+		 <script src="../threex.dynamictexture-master/threex.dynamictext2dobject.js"></script>
+		 
+		<script src="bower_components/threex.dynamictexture/threex.dynamictexture.js"></script>
+		 <!-- Sockets -->
+		 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		 <!-- REACT -->
+		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/react.min.js"></script>
+		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/react-dom.min.js"></script>
+		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/browser.min.js"></script>
+		 <!-- Style Sheet -->
+		 <link rel="stylesheet" type="text/css" href="../Main.css" />
+		 <link rel="stylesheet" type="text/css" href="Pac.css" />
+		 <!-- Bootstrap -->
+		 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	 </head>
 	
-	<script type="text/javascript" src="../three.js-master/examples/js/controls/OrbitControls.js"></script>
-    <script type="text/javascript" src="../three.js-master/examples/js/controls/DragControls.js"></script>
-    <script type="text/javascript" src="../three.js-master/examples/js/controls/TrackballControls.js"></script>
-    <script type="text/javascript" src="../three.js-master/examples/js/lights/RectAreaLightUniformsLib.js"></script>
-    
-	<script src="../threex.dynamictexture-master/threex.dynamictexture.js"></script>
-	<script src="../threex.dynamictexture-master/threex.dynamictext2dobject.js"></script>
-	
-	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-	<link rel="stylesheet" type="text/css" href="../Main.css" />
-	
-	<!-- Bootstrap -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<style>
-        div.container {
-			width: 25%;
-			border: 1px solid gray;
-			align: right;
-		}
-    </style>
-</head>
-<body>
-<header>
-   <h1>J.A.Y.'s Multi-player Networking Arcade!!!</h1>
-</header>
+ 	 <body>
+	 
+		 <header>
+			 <h1>J.A.Y.'s Multi-player Networking Arcade!!!</h1>
+		 </header>
 
- <!-- NAV -->
-<nav class="navbar navbar-inverse navbar-static-top"> 
-  <div class="container-fluid">
-    <div class="navbar-header">
-		 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-			<!-- Gives me the links in the button-->
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>  
-		</button>
-	  <!-- <a class="navbar-brand" href="#" id="demo">Username: </a> -->
-    </div>
-	<div class = "collapse navbar-collapse" id="myNavbar">
-    <ul class="nav navbar-nav">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="../FlappyBird/FlappyBird.html">Flappy Bird</a></li>
-      <li><a href="../Domino/Domino.html">Domino</a></li>
-	  <li><a href="../Pac-Man/Pac-Man.html">Pac-Man</a></li>
-      <li class ="active"><a href="#">Park</a></li>
-	   <li><a href="../ReactExamples/React.html">React</a></li>
-    </ul>
-	<ul class = "nav navbar-nav navbar-right">
-	</ul>
-  </div>
-  </div>
-</nav>
+		 <!-- NAV -->
+		 <nav class="navbar navbar-inverse navbar-static-top"> 
+			 <div class="container-fluid">
+				 <div class="navbar-header">
+					 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+						 <!-- Gives me the links in the button-->
+						 <span class="icon-bar"></span>
+						 <span class="icon-bar"></span>
+						 <span class="icon-bar"></span>  
+					 </button>
+					 <!-- <a class="navbar-brand" href="#" id="demo">Username: </a> -->
+				 </div>
+				 <div class = "collapse navbar-collapse" id="myNavbar">
+					 <ul class="nav navbar-nav">
+						 <li><a href="../index.html">Home</a></li>
+						 <li><a href="../FlappyBird/FlappyBird.html">Flappy Bird</a></li>
+						 <li><a href="../Domino/Domino.html">Domino</a></li>
+						 <li><a href="../Pac-Man/Pac-Man.html">Pac-Man</a></li>
+						 <li class ="active"><a href="#">Park</a></li>
+						 <li><a href="../ReactExamples/React.html">React</a></li>
+					 </ul>
+					 <ul class = "nav navbar-nav navbar-right"> </ul>
+				 </div>
+			 </div>
+		 </nav>
 
-<article>
-  <h1 align = center ><U>Cherry Blossom Park:</U></h1>
-  
-	<!-- <div id="Stats-output"></div> -->
-		<div id="WebGL-output" align= "center" align="top"></div>
-			<!-- <ul id="messages" align="right" align = "bottom"></ul> -->
+		 <article>
+		     <h1 align = center ><U>Cherry Blossom Park:</U></h1>
+		  
+			 <div id="WebGL-output" align= "center" align="top"></div>
+			 
+			 <script src="graphics.js" type="text/javascript" align= "center"> </script>
 			
+			 <script type = "text/babel">
+			 
+				 var Jasonas = React.createClass({
+					 alerting: function(){
+						 alert('Jason the Real Life Time Button works!!!!');
+					 },
+					 consoles: function(){
+						 alert('Jason the Game Time Button works!!!!');
+					 },
 
-	<script src="graphics.js" type="text/javascript" align= "left">
-		//console.log("1");
-		//Sockets
-			//socket = io.connect('http://localhost:9000');
-			//socket = io.connect('ec2-54-84-203-78.compute-1.amazonaws.com:9000');
+					 render: function (){
+						 return(
+							 <div>
+								 <h2></h2>
+								 <button onClick = {this.alerting} className = "button-primary" align = "left">Real Life Time Button</button>	      <button onClick = {this.consoles} className = "button-danger" align = "right">Game Time Button</button>
+							 </div>
+						 );
+					 }
+				 });
+			
+				 ReactDOM.render(< Jasonas title = "Batman">Joe</Jasonas>, document.getElementById('example'));
+				 
+			 </script>
+			
+			 <div align=center id="example"> </div>
+			
+			 <p class = "detailPara" text align = "center" >
+				 Cherry Blossom Github Repo-
+				 <a href="https://github.com/youngj25/Three.js-Park" align="center">Link to the Github Repo</a>
+			 </p>
+			 
+		 </article>	
+	 
+		 <!-- Creating a footer note -->
+		 <footer>created by Jason A. Young</footer>
 		
-		//function joinGame();
-		//console.log("2");
-	</script>
-	
-	
-</article>	
-<!-- Creating a footer note -->
-<footer>created by Jason A. Young</footer>
-</body>
+	 </body>
 </html>
