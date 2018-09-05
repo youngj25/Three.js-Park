@@ -19,7 +19,7 @@ function setup() {
 	 renderer = new THREE.WebGLRenderer({ antialias: true} );
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
 	 //set the size
-	 renderer.setSize(window.innerWidth*0.90, window.innerHeight*0.75);
+	 renderer.setSize(window.innerWidth*0.58, window.innerHeight*0.75);
 	 //renderer.shadowMapEnabled = true	
 	 
 	 var controls = new THREE.TrackballControls( camera );
@@ -220,7 +220,7 @@ function setup() {
 	
 	 //Window Resize Event
 	 function onWindowResize(){
-		 renderer.setSize(window.innerWidth*0.90, window.innerHeight*0.75);
+		 renderer.setSize(window.innerWidth*0.58, window.innerHeight*0.75);
 		 camera.aspect = renderer.domElement.width/renderer.domElement.height;
 	 }
 	 window.addEventListener('resize', onWindowResize, false);
