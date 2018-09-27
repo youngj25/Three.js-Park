@@ -33,28 +33,29 @@ function setup() {
 	
 	 //add spotlight for the shadows
 	 var spotLight = new THREE.SpotLight(0xffffff,1);
-	 spotLight.castShadow = true;
-	 spotLight.intensity =4;
-	 spotLight.position.set(-7.5,-1,-3); //xyz
-	// scene.add(spotLight);
-	
+	 spotLight.castShadow = false;
+	 spotLight.intensity =0.5;
+	 spotLight.position.set(-10,5, 350); //xyz
+	 scene.add(spotLight);
+	 
 	 try{
 		 Timez = new THREEx.DynamicText2DObject();
 		 Timez.parameters.text= "Clocks"; //CHANGED
 		 //Timez.parameters.font= "70px Arial";
-		 Timez.parameters.fillStyle= "LightGrey";
+		 Timez.parameters.fillStyle= "White";
 		 Timez.parameters.align = "center";
 		 Timez.dynamicTexture.canvas.width = 512;
 		 Timez.position.set(-7.5,-6.8, 4.75);
 		 Timez.scale.set(5,4,1);
-		 Timez.material.lights = true;
-		 Timez.material.lightMapIntensity = 3;
-		 Timez.material.reflectivity =1;
-		 Timez.material.shininess = 1;
-		 Timez.material.refractionRatio = 1;
+		 //Timez.material.lights = true;
+		 //Timez.material.lightMapIntensity = 3;
+		 //Timez.material.reflectivity =1;
+		 //Timez.material.shininess = 1;
+		 //Timez.material.refractionRatio = 1;
 		 Timez.update();
 		 scene.add(Timez);
-		 //console.log(Timez);
+		 console.log(Timez);
+
 	 }
 	 catch(e){
 		 //functionToHandleError(e);		
@@ -92,22 +93,34 @@ function setup() {
 	 for(var x = 0; x < 25; x++)
 		 createPedals();
 	 
-	//Audio
-	var NightTheme = new Audio('Audio/Night - [Rune Factory Frontier].mp3');
+	 //Audio
+	 var listener = new THREE.AudioListener();
+	 camera.add( listener );
+	 
+	 var NightTheme = new THREE.Audio( listener );
+	 var audioLoader = new THREE.AudioLoader();
+	 audioLoader.load('Audio/Night - [Rune Factory Frontier].mp3', function( buffer ) {
+		 NightTheme.setBuffer( buffer );
+		 NightTheme.setLoop( true );
+		 NightTheme.setVolume( 0.2 );
+	 });
 	
 	
-	NightTheme.volume=0.0;
-	//NightTheme.Audio.setLoop(true);
-	console.log(NightTheme);
-	NightTheme.play();
-	
-	
-	var SummerTheme = new Audio('Audio/Summer - [Rune Factory Frontier].mp3');
-	SummerTheme.volume=0.0;
-	
-	var SpringTheme = new Audio('Audio/Spring - [Rune Factory Frontier].mp3');
-	SpringTheme.volume=0.0;
-	
+	 var SpringTheme = new THREE.Audio( listener );
+	 audioLoader = new THREE.AudioLoader();
+	 audioLoader.load('Audio/Spring - [Rune Factory Frontier].mp3', function( buffer ) {
+		 SpringTheme.setBuffer( buffer );
+		 SpringTheme.setLoop( true );
+		 SpringTheme.setVolume( 0.2 );
+	 });
+	 
+	 var SummerTheme = new THREE.Audio( listener );
+	 audioLoader = new THREE.AudioLoader();
+	 audioLoader.load('Audio/Summer - [Rune Factory Frontier].mp3', function( buffer ) {
+		 SummerTheme.setBuffer( buffer );
+		 SummerTheme.setLoop( true );
+		 SummerTheme.setVolume( 0.2 );
+	 });
 		
 	 //Loader
 	 var loader = new THREE.TextureLoader();
@@ -142,6 +155,7 @@ function setup() {
 	 var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
 	 Moon.position.set(-10,20,10); //xyz
 	 scene.add( Moon );
+	 
 	 //MoonLight
 	 var moonLight = new THREE.PointLight( 0x5555ff, 3.25, 100 );
 	 moonLight.position.x = Moon.position.x;
@@ -194,6 +208,11 @@ function setup() {
 	 //Stop bench for now
 	 //scene.add(BenchT);
 	
+	 //var Status = document.getElementById("Status").innerHTML;
+	 var d = new Date();
+	 console.log(d.getHours());
+	 console.log(d.getMinutes());
+	
 	 //The KEyboard Commands
 	 var onKeyDown = function(event) {
 		 if (event.keyCode == 38){ //Up Arrow
@@ -220,8 +239,14 @@ function setup() {
 			 var d = new Date();
 			 step = 22000;
 	 	 }
-		 else if (event.keyCode == 32){ //Left Arrow
-			 console.log(Pellets);
+		 else if (event.keyCode == 32){ //Space Bar -- my double check for values and status
+			 console.log(NightTheme ) ;
+			 console.log("Sky: "+Sky.NightTheme ) ;
+			 console.log(NightTheme.volume ) ;
+			 console.log("Sp:"+SpringTheme.isPlaying ) ;
+			 console.log("Su:"+SummerTheme.isPlaying ) ;
+			 console.log("N:"+NightTheme.isPlaying ) ;
+			 //console.log(Pellets);
 	 	 }
 		
 		 //var d = new Date();
@@ -288,7 +313,7 @@ function setup() {
 		 PedalG:85,
 		 PedalB:153,
 		 TransitioningTo: "Night",
-		 NightTheme:0,
+		 NightTheme:0.2,
 		 SummerTheme:0,
 		 SpringTheme:0
 	 };
@@ -343,7 +368,13 @@ function setup() {
 			 
 	 function renderScene(){
 		 //Render steps
-			 step = Math.round(1+step);
+			 if( document.getElementById("Status").innerHTML == "Real Life Time"){
+				 //Sets the steps/time
+				 step = Math.round(step);
+				 
+			 }				 
+			 else
+				 step = Math.round(1+step);
 			
 			 //render using requestAnimationFrame
 			 requestAnimationFrame(renderScene);
@@ -370,9 +401,23 @@ function setup() {
 				 Sky.PedalG = -(Sky.PedalG-Dusk.PedalG)/(4000/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-Dusk.PedalB)/(4000/backgroundInterval) + Sky.PedalB;
 				
+				 //Audio
+				 //Decreasing the night music
+				 if(Sky.SpringTheme > 0 && SpringTheme.isPlaying == true){
+					 SpringTheme.stop();
+					 SpringTheme.volume= 0;
+				 }
 				 
+				 //Increasing the Dawn music
+				 if(SummerTheme.isPlaying == false) 
+					 SummerTheme.play();
+				 if(Sky.SummerTheme < 0.5){
+					 Sky.SummerTheme +=  0.0005;
+					 SummerTheme.volume= Math.floor(Sky.SummerTheme*10)/10;
+				 }
+				
 				 
-				 if(step >= 17500 ){
+				 if((step%24000) >= 17500 ){
 					 Sky.TransitioningTo = "Night";
 					 console.log( "Moving towards " + Sky.TransitioningTo);
 				 }
@@ -400,21 +445,33 @@ function setup() {
 				 Sky.PedalG = -(Sky.PedalG-Night.PedalG)/(2750/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-Night.PedalB)/(2750/backgroundInterval) + Sky.PedalB;
 				
-				//Audio
-				if(Sky.NightTheme < 0.35){
+				 //Audio
+				 //Decreasing the night music
+				 if(Sky.SummerTheme > 0 && SummerTheme.isPlaying == true){
+					 
+					Sky.SummerTheme -=  0.0025;
+					
+					if( Sky.SummerTheme <= 0 ){
+						Sky.SummerTheme =  0;
+						SummerTheme.stop();
+					}
+					else SummerTheme.volume= Math.floor(Sky.SummerTheme*10)/10;
+				 }
+				 //Increasing the Night music
+				  if(NightTheme.isPlaying == false) 
+					 NightTheme.play();
+				 if(Sky.NightTheme < 0.25){
 					 Sky.NightTheme +=  0.0005;
 					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
-					 //console.log(NightTheme);					 
 				 }
 				
-				if(step >= 22000 ){
+				if((step%24000) >= 22000 ){
 					Sky.TransitioningTo = "MidNight";
-					
 					console.log( "Moving towards " + Sky.TransitioningTo);
 				}
 					
-			}
-			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "MidNight"){
+			 }
+			 else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "MidNight"){
 				Sky.R = -(Sky.R-MidNight.R)/(2000/backgroundInterval) + Sky.R;
 				Sky.G = -(Sky.G-MidNight.G)/(2000/backgroundInterval) + Sky.G;
 				Sky.B = -(Sky.B-MidNight.B)/(2000/backgroundInterval) + Sky.B;
@@ -435,19 +492,16 @@ function setup() {
 				 Sky.PedalG = -(Sky.PedalG-MidNight.PedalG)/(2000/backgroundInterval) + Sky.PedalG;
 				 Sky.PedalB = -(Sky.PedalB-MidNight.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
 				
-				
-				 if(Sky.NightTheme < 0.5){
+				 //Increasing the Night music
+				  if(NightTheme.isPlaying == false) 
+					 NightTheme.play();
+				 if(Sky.NightTheme < 0.25){
 					 Sky.NightTheme +=  0.0005;
 					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
-					 //console.log(NightTheme);					 
 				 }
-				
-				 if(step>=24000) step = 0;
-				
-				 if(step >= 4500 && step <18000) {
-					 Sky.TransitioningTo = "Dawn";
-					 SpringTheme.play();
-					
+				 
+				 if((step%24000) >= 4500 && (step%24000) <18000) {
+					 Sky.TransitioningTo = "Dawn";					
 					 console.log( "Moving towards " + Sky.TransitioningTo);
 				 }
 			 }
@@ -473,53 +527,66 @@ function setup() {
 				 Sky.PedalB = -(Sky.PedalB-Dawn.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
 				
 				 //Audio
-				 if(Sky.NightTheme > 0){
+				 //Decreasing the night music
+				 if(Sky.NightTheme > 0 && NightTheme.isPlaying == true){
+					 
 					Sky.NightTheme -=  0.0015;
-					NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
+					
 					if( Sky.NightTheme <= 0 ){
 						Sky.NightTheme =  0;
 						NightTheme.stop();
 					}
+					else NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
 				 }
 				 
-				 if(Sky.SpringTheme < 0.35){
+				 //Increasing the Dawn music
+				 if(SpringTheme.isPlaying == false) 
+					 SpringTheme.play();
+				 if(Sky.SpringTheme < 0.5){
 					 Sky.SpringTheme +=  0.0005;
 					 SpringTheme.volume= Math.floor(Sky.SpringTheme*10)/10;
-					 //console.log(SpringTheme);					 
 				 }
 				
 				
-				if(step >= 6500 ){
+				if((step%24000) >= 6000 ){
 					Sky.TransitioningTo = "Day"
 					console.log( "Moving towards " + Sky.TransitioningTo);
 				}
 			}					
-			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
-				Sky.R = -(Sky.R-Day.R)/(2500/backgroundInterval)  + Sky.R;
-				Sky.G = -(Sky.G-Day.G)/(2500/backgroundInterval)  + Sky.G;
-				Sky.B = -(Sky.B-Day.B)/(2500/backgroundInterval)  + Sky.B;
+			 else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
+				 Sky.R = -(Sky.R-Day.R)/(2500/backgroundInterval)  + Sky.R;
+				 Sky.G = -(Sky.G-Day.G)/(2500/backgroundInterval)  + Sky.G;
+				 Sky.B = -(Sky.B-Day.B)/(2500/backgroundInterval)  + Sky.B;
 				
-				scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+				 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 				
-				//The SetLightSource becomes purple for dawn color
-				Sky.LightR = -(Sky.LightR-Day.LightR)/(2500/backgroundInterval) + Sky.LightR;
-				Sky.LightG = -(Sky.LightG-Day.LightG)/(2500/backgroundInterval) + Sky.LightG;
-				Sky.LightB = -(Sky.LightB-Day.LightB)/(2500/backgroundInterval) + Sky.LightB;
+				 //The SetLightSource becomes purple for dawn color
+				 Sky.LightR = -(Sky.LightR-Day.LightR)/(2250/backgroundInterval) + Sky.LightR;
+				 Sky.LightG = -(Sky.LightG-Day.LightG)/(2250/backgroundInterval) + Sky.LightG;
+				 Sky.LightB = -(Sky.LightB-Day.LightB)/(2250/backgroundInterval) + Sky.LightB;
 				
-				SetLightSource.color.r = Sky.LightR;
-				SetLightSource.color.g = Sky.LightG;
-				SetLightSource.color.b = Sky.LightB;
+				 SetLightSource.color.r = Sky.LightR;
+			 	 SetLightSource.color.g = Sky.LightG;
+				 SetLightSource.color.b = Sky.LightB;
 				
 				 //Pedals
-				 Sky.PedalR = -(Sky.PedalR-Day.PedalR)/(2500/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Day.PedalG)/(2500/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Day.PedalB)/(2500/backgroundInterval) + Sky.PedalB;
+				 Sky.PedalR = -(Sky.PedalR-Day.PedalR)/(2250/backgroundInterval) + Sky.PedalR;
+				 Sky.PedalG = -(Sky.PedalG-Day.PedalG)/(2250/backgroundInterval) + Sky.PedalG;
+				 Sky.PedalB = -(Sky.PedalB-Day.PedalB)/(2250/backgroundInterval) + Sky.PedalB;
+				 
+				 //Increasing the Dawn music
+				 if(SpringTheme.isPlaying == false) 
+					 SpringTheme.play();
+				 if(Sky.SpringTheme < 0.5){
+					 Sky.SpringTheme +=  0.0025;
+					 SpringTheme.volume= Math.floor(Sky.SpringTheme*10)/10;
+				 }
 				
-				if(step >= 13500 ){
-					Sky.TransitioningTo = "Dusk"
-					console.log( "Moving towards " + Sky.TransitioningTo);
-				}
-			}
+				 if((step%24000) >= 13500 ){
+					 Sky.TransitioningTo = "Dusk"
+					 console.log( "Moving towards " + Sky.TransitioningTo);
+				 }
+			 }
 				
 		 scene.traverse(function (e) {
 			 //if( e == p || e == q){
@@ -574,17 +641,20 @@ function setup() {
 					 //e.position.x = 0.009 * Math.sin(step);
 				 }
 				 else if(e == Timez){
-					 var hours = Math.floor(((step-1000)/1000)%12)+1;
+					 var hours = Math.floor((((step%24000)-1000)/1000)%12)+1;
 					 if(hours == 0) hours =12;
 					
-					 var minutes = Math.floor(((step%1000)/1000)*60);
+					 var minutes = Math.floor((((step%24000)%1000)/1000)*60);
 					
-					 if( minutes < 10 && step>=12000) e.parameters.text= hours+":0"+minutes+" PM";
-					 else if( minutes < 10 && step<12000) e.parameters.text= hours+":0"+minutes+" AM";
-					 else if( minutes >= 10 && step>=12000) e.parameters.text= hours+":"+minutes+" PM";
+					 if( minutes < 10 && (step%24000)>=12000) e.parameters.text= hours+":0"+minutes+" PM";
+					 else if( minutes < 10 && (step%24000)<12000) e.parameters.text= hours+":0"+minutes+" AM";
+					 else if( minutes >= 10 && (step%24000)>=12000) e.parameters.text= hours+":"+minutes+" PM";
 					 else e.parameters.text= hours+":"+minutes+" AM"; //CHANGED
 					
 					 e.update();
+				 }
+				 else if(e == spotLight){
+					 //Idk what to do with the spotLight but I plan to use it in the future
 				 }
 				 else if(e != THREE.PointLight){ // Pedals
 					 
