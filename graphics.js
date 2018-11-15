@@ -701,6 +701,29 @@ function setup() {
 			 }
 		 });
 	 }
+	 
+	 //This function will transition the sky color and the lights
+	 function transitionDay(step, CurrentSky, GoalSky){
+		 //Change Sky Color
+		 CurrentSky.R = -(CurrentSky.R-GoalSky.R)/(4000/backgroundInterval) + CurrentSky.R;
+		 CurrentSky.G = -(CurrentSky.G-GoalSky.G)/(4000/backgroundInterval) + CurrentSky.G;
+		 CurrentSky.B = -(CurrentSky.B-GoalSky.B)/(4000/backgroundInterval) + CurrentSky.B;
+		 
+		 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+		
+		  //The SetLightSource becomes purple for dawn color
+		 Sky.LightR = -(Sky.LightR-Dusk.LightR)/(4000/backgroundInterval) + Sky.LightR;
+		 Sky.LightG = -(Sky.LightG-Dusk.LightG)/(4000/backgroundInterval) + Sky.LightG;
+		 Sky.LightB = -(Sky.LightB-Dusk.LightB)/(4000/backgroundInterval) + Sky.LightB;
+		
+		 SetLightSource.color.r = Sky.LightR;
+		 SetLightSource.color.g = Sky.LightG;
+		 SetLightSource.color.b = Sky.LightB;
+		 
+		 
+	 }
+	 
+	 
 }
 
 window.onload = setup;	
