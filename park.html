@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 	 <head>
 		 <title>Cherry Blossom Park</title>
 		 <!-- Three.js -->
@@ -12,18 +11,16 @@
 		 <script type="text/javascript" src="../three.js-master/examples/js/lights/RectAreaLightUniformsLib.js"></script>
 		 <!-- Text -->
 		 <script src="../threex.dynamictexture-master/threex.dynamictexture.js"></script>
-		 <script src="../threex.dynamictexture-master/threex.dynamictext2dobject.js"></script>
-		 
-		<script src="bower_components/threex.dynamictexture/threex.dynamictexture.js"></script>
+		 <script src="../threex.dynamictexture-master/threex.dynamictext2dobject.js"></script>		
 		 <!-- Sockets -->
-		 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 		 <!-- REACT -->
 		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/react.min.js"></script>
 		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/react-dom.min.js"></script>
 		 <script type="text/javascript" src="../React-Boilerplate-master/src/js/browser.min.js"></script>
 		 <!-- Style Sheet -->
 		 <link rel="stylesheet" type="text/css" href="../Main.css" />
-		 <link rel="stylesheet" type="text/css" href="Pac.css" />
+		 <link rel="stylesheet" type="text/css" href="Park.css" />
 		 <!-- Bootstrap -->
 		 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -32,12 +29,11 @@
 	
  	 <body>
 	 
-		 <header>
-			 <h1>J.A.Y.'s Multi-player Networking Arcade!!!</h1>
-		 </header>
+		 <header> J.A.Y.'s Multi-player Networking Arcade!!!</header>
 
 		 <!-- NAV -->
-		 <nav class="navbar navbar-inverse navbar-static-top"> 
+		 <!-- <nav class="navbar navbar-inverse navbar-static-top"> -->
+		 <nav class="navbar navbar-static-top"> 
 			 <div class="container-fluid">
 				 <div class="navbar-header">
 					 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -51,23 +47,21 @@
 				 <div class = "collapse navbar-collapse" id="myNavbar">
 					 <ul class="nav navbar-nav">
 						 <li><a href="../index.html">Home</a></li>
-						 <li><a href="../FlappyBird/FlappyBird.html">Flappy Bird</a></li>
-						 <li><a href="../Domino/Domino.html">Domino</a></li>
-						 <li><a href="../Pac-Man/Pac-Man.html">Pac-Man</a></li>
-						 <li class ="active"><a href="#">Park</a></li>
-						 <li><a href="../ReactExamples/React.html">React</a></li>
+						 <li><a href="../About.html">About</a></li>
+						 <li><a href="../Pac-Mania/PacManiaGame.html">Pac-Mania</a></li>
+						 <li><a href="../GameTimeLine.html">More Games...</a></li>
 					 </ul>
-					 <ul class = "nav navbar-nav navbar-right"> </ul>
 				 </div>
 			 </div>
 		 </nav>
 
-		 <article>
-		     <h1 align = center ><U>Cherry Blossom Park:</U></h1>
-		  
+		 <h2 class="sectionTitle"> Cherry Blossom Park: </h2>
+		 <article>		  
 			 <div id="WebGL-output" align= "center" align="top"></div>
 			 
 			 <script src="graphics.js" type="text/javascript" align= "center"> </script>
+			
+			 <h4 id = "Status"  align = "center">Game Time</h4>
 			
 			 <script type = "text/babel">
 			 
@@ -75,15 +69,20 @@
 					 alerting: function(){
 						 alert('Jason the Real Life Time Button works!!!!');
 					 },
-					 consoles: function(){
-						 alert('Jason the Game Time Button works!!!!');
+					 gameTime: function(){
+						 document.getElementById("Status").innerHTML ="Game Time";	
+					 },
+					 realLifeTime: function(){
+						 document.getElementById("Status").innerHTML ="Real Life Time";	
 					 },
 
 					 render: function (){
 						 return(
 							 <div>
 								 <h2></h2>
-								 <button onClick = {this.alerting} className = "button-primary" align = "left">Real Life Time Button</button>	      <button onClick = {this.consoles} className = "button-danger" align = "right">Game Time Button</button>
+								 <button onClick = {this.gameTime}>Game Time Button</button>
+								 <button onClick = {this.realLifeTime}>Real Life Button</button>
+						
 							 </div>
 						 );
 					 }
@@ -95,7 +94,7 @@
 			
 			 <div align=center id="example"> </div>
 			
-			 <p class = "detailPara" text align = "center" >
+			 <p class = "githubDescription">
 				 Cherry Blossom Github Repo-
 				 <a href="https://github.com/youngj25/Three.js-Park" align="center">Link to the Github Repo</a>
 			 </p>
@@ -104,6 +103,5 @@
 	 
 		 <!-- Creating a footer note -->
 		 <footer>created by Jason A. Young</footer>
-		
 	 </body>
 </html>

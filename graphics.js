@@ -1,10 +1,11 @@
 var wait=0, direction = -1;
-var Timez, Pellets;
+var Timez, petalTextures = null;
+var graphicSettings, graphicSky;
+var objects = [];
 
 function setup() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
 	 scene = new THREE.Scene();
-	 projector = new THREE.Projector();  
 	
 	 // create a camera, which defines where we're looking at.
 	 camera = new THREE.PerspectiveCamera(45, 800/ 500, 0.1, 1000);
@@ -31,69 +32,63 @@ function setup() {
 	 controls.staticMoving = true;
 	 controls.dynamicDampingFactor = 0.3; 
 	
+	 // The Graphic Settings
+	 graphicSettings = {
+		 time: "gameTime",
+		 music: false,
+		 sky : 4,
+		 TransitioningTo : "MidNight"
+		 
+		 /**
+		 R:25,
+		 G:46,
+		 B:105,
+		 LightR:2,
+		 LightG:2,
+		 LightB:5,
+		 PedalR:255,
+		 PedalG:85,
+		 PedalB:153,
+		 TransitioningTo: "Night",
+		 NightTheme:0.2,
+		 SummerTheme:0,
+		 SpringTheme:0		 
+		 **/
+		 
+	 }
+		
 	 //add spotlight for the shadows
 	 var spotLight = new THREE.SpotLight(0xffffff,1);
 	 spotLight.castShadow = false;
 	 spotLight.intensity =0.5;
 	 spotLight.position.set(-10,5, 350); //xyz
-	 scene.add(spotLight);
-	 
-	 try{
-		 Timez = new THREEx.DynamicText2DObject();
-		 Timez.parameters.text= "Clocks"; //CHANGED
-		 //Timez.parameters.font= "70px Arial";
-		 Timez.parameters.fillStyle= "White";
-		 Timez.parameters.align = "center";
-		 Timez.dynamicTexture.canvas.width = 512;
-		 Timez.position.set(-7.5,-6.8, 4.75);
-		 Timez.scale.set(5,4,1);
-		 //Timez.material.lights = true;
-		 //Timez.material.lightMapIntensity = 3;
-		 //Timez.material.reflectivity =1;
-		 //Timez.material.shininess = 1;
-		 //Timez.material.refractionRatio = 1;
-		 Timez.update();
-		 scene.add(Timez);
-		 console.log(Timez);
-
-	 }
-	 catch(e){
-		 //functionToHandleError(e);		
-		 //He HE HE don't say a word if errors happen
-	 }
+	 scene.add(spotLight);	 
 	
-		
-	 //From Pacman 3D
-	 var createPedals = function () {
-		 return function () {
-			 //Pellets lol I made this one too!!! :D
-			 //Loader for Sprites
-			 var loader = new THREE.TextureLoader();
-			 loader.crossOrigin = true;
-			 var Texture00 = loader.load( 'Images/Bpedal - Copy.png' );
-		 	 Texture00.minFilter = THREE.LinearFilter;
-			 var Pells = new THREE.SpriteMaterial( { map: Texture00, color: 0xff5599 } );
-		 	 Pellets =  new THREE.Sprite(Pells);	
-			 //console.log(Pellets);
-			 Pellets.scale.set(0.5,0.25,1);
-			 //Pellets.scale.set(0.5,0.5,1);
-			 Pellets.material.lights = true;
-			 Pellets.castShadow = true;
-			
-			 Pellets.name = Math.floor(Math.random()*5);
-			 //console.log(Pellets.name);
-			 Pellets.position.set(	 Math.floor(Math.random()*20)-5, 	//X
-												 Math.floor(Math.random()*15)-5, 	//Y
-												 Math.floor(Math.random()*8)); 		//Z
-			 scene.add(Pellets);
-		 };
-	 }();	
-	
-	 //Pedals
+	 // Timez - The Clock in the bottom left corner
+	 Timez = new THREEx.DynamicText2DObject();
+	 Timez.parameters.text= "Clocks"; //CHANGED
+	 Timez.parameters.fillStyle= "Black";
+	 Timez.parameters.align = "center";
+	 Timez.posX = -7.5;
+	 Timez.posY =  -6.8;
+	 Timez.posZ = 4.75;
+	 Timez.position.set( Timez.posX, Timez.posY, Timez.posZ);
+	 Timez.scale.set(5,4,1);
+	 Timez.material.lightMapIntensity = 0;
+	 Timez.material.reflectivity =0;
+	 Timez.update();
+	 Timez.name = "Clock";
+	 Timez.type = "button";
+	 scene.add(Timez);
+	 objects.push(Timez);
+	 console.log(Timez);		 
+		 
+	 // Petals Added to the Scene
 	 for(var x = 0; x < 25; x++)
-		 createPedals();
+		 scene.add(createPetals());
 	 
-	 //Audio
+	 /**
+	 // Audio
 	 var listener = new THREE.AudioListener();
 	 camera.add( listener );
 	 
@@ -121,12 +116,13 @@ function setup() {
 		 SummerTheme.setLoop( true );
 		 SummerTheme.setVolume( 0.2 );
 	 });
+	 **/	
 		
-	 //Loader
+	 // Loader
 	 var loader = new THREE.TextureLoader();
 	 loader.crossOrigin = true;
 		
-	 //Grass
+	 // Grass
 	 var grass = loader.load( 'Images/hd-grass-background-1.jpg' );
 	 grass.minFilter = THREE.LinearFilter;
 	 var planeGeometry = new THREE.PlaneBufferGeometry (37.5, 15,0);	
@@ -137,7 +133,7 @@ function setup() {
 	 Board.lights = true;
 	 scene.add(Board);
 	
-	 //Tree
+	 // Tree
 	 var wood = loader.load( 'Images/tree-218738_960_720.jpg' );
 	 wood.minFilter = THREE.LinearFilter;
 	 var planeMaterial2 =  new THREE.MeshLambertMaterial( { map: wood, color: 0xffffff } );
@@ -147,7 +143,7 @@ function setup() {
 	 //Tree.lights = true;
 	 //scene.add( Tree );
 	
-	 //Moon
+	 // Moon
  	 var moon = loader.load( 'Images/moonTexture.jpg' );
 	 moon.minFilter = THREE.LinearFilter;
 	 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
@@ -156,14 +152,14 @@ function setup() {
 	 Moon.position.set(-10,20,10); //xyz
 	 scene.add( Moon );
 	 
-	 //MoonLight
+	 // MoonLight
 	 var moonLight = new THREE.PointLight( 0x5555ff, 3.25, 100 );
 	 moonLight.position.x = Moon.position.x;
 	 moonLight.position.y = Moon.position.y;
 	 moonLight.position.z = Moon.position.z;
 	 scene.add( moonLight );
 	
-	 //Sun //Credits: https://i.ytimg.com/vi/nUWfZfsW7uU/maxresdefault.jpg
+	 // Sun //Credits: https://i.ytimg.com/vi/nUWfZfsW7uU/maxresdefault.jpg
 	 var sun = loader.load( 'Images/sunTexture.jpg' );
 	 sun.minFilter = THREE.LinearFilter;
 	 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
@@ -177,11 +173,11 @@ function setup() {
 	 sunLight.position.z = Sun.position.z;
 	 scene.add( sunLight );
 	
-	 //Dawn Light
+	 // Dawn Light
 	 var dawnLight = new THREE.PointLight( 0x00ff00, 2, 100 );
 	 //scene.add( dawnLight );
 	
-	 //Dusk Light
+	 // Dusk Light
 	 var duskLight = new THREE.PointLight( 0xff0000, 2.5, 100 );
 	 //scene.add( duskLight );
 	
@@ -189,7 +185,7 @@ function setup() {
 	 SetLightSource.position.set(0,30,-10); //xyz
 	 scene.add( SetLightSource );
 	
-	 //Bench
+	 // Bench
 	 var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
 	 wood.minFilter = THREE.LinearFilter;
  	 var planeGeometry3 = new THREE.BoxGeometry (5.5, 2.5,0.25);
@@ -209,10 +205,7 @@ function setup() {
 	 //scene.add(BenchT);
 	
 	 //var Status = document.getElementById("Status").innerHTML;
-	 var d = new Date();
-	 console.log(d.getHours());
-	 console.log(d.getMinutes());
-	
+	 
 	 //The KEyboard Commands
 	 var onKeyDown = function(event) {
 		 if (event.keyCode == 38){ //Up Arrow
@@ -262,47 +255,8 @@ function setup() {
 	 window.addEventListener('resize', onWindowResize, false);
 	 //https://stackoverflow.com/questions/20290402/three-js-resizing-canvas?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	
-	 //Sky Colors based on Timezs
-	 var Dawn = { //4am
-		 R:132,
-		 G:109,
-		 B:231,
-		 LightR:5,
-		 LightG:0,
-		 LightB:20,
-		 PedalR:255,
-		 PedalG:185,
-		 PedalB:205,
-		 TransitionTime:6000
-	 };
-	
-	 var Day = { //9am
-		 R:77,
-		 G:223,
-		 B:255,
-		 LightR:10,
-		 LightG:15,
-		 LightB:15,
-		 PedalR:255,
-		 PedalG:235,
-		 PedalB:235,
-		 TransitionTime:15500
-	 };
-	
-	 var Dusk = {//6pm
-		 R:255,
-		 G:193,
-	 	 B:151,
-		 LightR:9,
-		 LightG:4,
-		 LightB:3,
-		  PedalR:200,
-		 PedalG:125,
-		 PedalB:255,
-		 TransitionTime:17500
-	 }; 
-	
-	 var Sky = {//Chaning variable
+	 //Sky Colors based on Timez and step
+	 var Sky = { //Changing variable
 		 R:25,
 		 G:46,
 		 B:105,
@@ -318,278 +272,75 @@ function setup() {
 		 SpringTheme:0
 	 };
 	
-	 var Night = {//9pm
-		 R:25,
-		 G:46,
-		 B:105,
-		 LightR:1,
-		 LightG:1,
-		 LightB:3,
-		 PedalR:240,
-		 PedalG:85,
-		 PedalB:190,
-		 TransitionTime:22500
-	 };
-	
-	 var MidNight = { //12am
-		 R:12,
-		 G:8,
-		 B:26,
-		 LightR:1,
-		 LightG:1,
-		 LightB:1,
-		 PedalR:255,
-		 PedalG:85,
-		 PedalB:153,
-		 TransitionTime:4500
-	 };
-	
-	 //scene.background = new THREE.Color( 0x4DD3FF );
+	 // scene.background = new THREE.Color( 0x4DD3FF );
 	 scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
 		
-	 //add the output of the renderer to the html element
+	 // add the output of the renderer to the html element
 	 document.getElementById("WebGL-output").appendChild(renderer.domElement);
-	 //controls = new THREE.OrbitControls(camera, renderer.domElement);
-	 //orbit = new THREE.OrbitControls(camera, webGLRenderer.domElement);
+	 // controls = new THREE.OrbitControls(camera, renderer.domElement);
+	 // orbit = new THREE.OrbitControls(camera, webGLRenderer.domElement);
 	
-	 //call the render function
+	 // call the render function
 	 renderer.render(scene, camera);
 		
-	 //call the render function
-	 //var step = 0;
+	 // call the render function
+	 // var step = 0;
 	 var step = 22450;
-	 //backgroundInterval for the step to update the screen background
+	 // backgroundInterval for the step to update the screen background
 	 var backgroundInterval = 5;
-	 //Divisor for the change between the colors
+	 // Divisor for the change between the colors
 	 var colorDivisor  = 100;
 	
-	 //Free Rendering... it will run and run and run as much as it wants
+	 // Free Rendering... it will run and run and run as much as it wants
 	 renderScene();
-			 
+	 drag_objects();
+	 loading_Sky_Colors();
+	 
 	 function renderScene(){
-		 //Render steps
-			 if( document.getElementById("Status").innerHTML == "Real Life Time"){
-				 //Sets the steps/time
-				 step = Math.round(step);
-				 
-			 }				 
-			 else
-				 step = Math.round(1+step);
+		 // Render steps
+		 if( document.getElementById("Status").innerHTML == "Real Life Time"){
+			 //Sets the steps/time
+			 step = Math.round(step);
+			 
+		 }				 
+		 else
+			 step = Math.round(1+step);
+		
+		 // render using requestAnimationFrame
+		 requestAnimationFrame(renderScene);
+		 renderer.render(scene, camera);
+		
+		 if(step % backgroundInterval == 0){
+			 Sky.R = -(Sky.R-graphicSky[graphicSettings.sky].R)/(2000/backgroundInterval) + Sky.R;
+			 Sky.G = -(Sky.G-graphicSky[graphicSettings.sky].G)/(2000/backgroundInterval) + Sky.G;
+			 Sky.B = -(Sky.B-graphicSky[graphicSettings.sky].B)/(2000/backgroundInterval) + Sky.B;
 			
-			 //render using requestAnimationFrame
-			 requestAnimationFrame(renderScene);
-			 renderer.render(scene, camera);
+			 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
 			
-			 if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dusk"){
-				 Sky.R = -(Sky.R-Dusk.R)/(4000/backgroundInterval) + Sky.R;
-				 Sky.G = -(Sky.G-Dusk.G)/(4000/backgroundInterval) + Sky.G;
-				 Sky.B = -(Sky.B-Dusk.B)/(4000/backgroundInterval) + Sky.B;
-				
-				 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-				
-				 //The SetLightSource becomes purple for dawn color
-				 Sky.LightR = -(Sky.LightR-Dusk.LightR)/(4000/backgroundInterval) + Sky.LightR;
-				 Sky.LightG = -(Sky.LightG-Dusk.LightG)/(4000/backgroundInterval) + Sky.LightG;
-				 Sky.LightB = -(Sky.LightB-Dusk.LightB)/(4000/backgroundInterval) + Sky.LightB;
-				
-				 SetLightSource.color.r = Sky.LightR;
-				 SetLightSource.color.g = Sky.LightG;
-				 SetLightSource.color.b = Sky.LightB;
-				
-				 //Pedals
-				 Sky.PedalR = -(Sky.PedalR-Dusk.PedalR)/(4000/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Dusk.PedalG)/(4000/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Dusk.PedalB)/(4000/backgroundInterval) + Sky.PedalB;
-				
-				 //Audio
-				 //Decreasing the night music
-				 if(Sky.SpringTheme > 0 && SpringTheme.isPlaying == true){
-					 SpringTheme.stop();
-					 SpringTheme.volume= 0;
-				 }
-				 
-				 //Increasing the Dawn music
-				 if(SummerTheme.isPlaying == false) 
-					 SummerTheme.play();
-				 if(Sky.SummerTheme < 0.5){
-					 Sky.SummerTheme +=  0.0005;
-					 SummerTheme.volume= Math.floor(Sky.SummerTheme*10)/10;
-				 }
-				
-				 
-				 if((step%24000) >= 17500 ){
-					 Sky.TransitioningTo = "Night";
-					 console.log( "Moving towards " + Sky.TransitioningTo);
-				 }
+			 // The SetLightSource becomes purple for dawn color
+			Sky.LightR = -(Sky.LightR-graphicSky[graphicSettings.sky].LightR)/(2000/backgroundInterval) + Sky.LightR;
+			Sky.LightG = -(Sky.LightG-graphicSky[graphicSettings.sky].LightG)/(2000/backgroundInterval) + Sky.LightG;
+			Sky.LightB = -(Sky.LightB-graphicSky[graphicSettings.sky].LightB)/(2000/backgroundInterval) + Sky.LightB;
+			
+			 SetLightSource.color.r = Sky.LightR;
+			 SetLightSource.color.g = Sky.LightG;
+			 SetLightSource.color.b = Sky.LightB;
+			
+			 // Pedals
+			 Sky.PedalR = -(Sky.PedalR-graphicSky[graphicSettings.sky].PedalR)/(2000/backgroundInterval) + Sky.PedalR;
+			 Sky.PedalG = -(Sky.PedalG-graphicSky[graphicSettings.sky].PedalG)/(2000/backgroundInterval) + Sky.PedalG;
+			 Sky.PedalB = -(Sky.PedalB-graphicSky[graphicSettings.sky].PedalB)/(2000/backgroundInterval) + Sky.PedalB;
+			 
+			 // 			 
+			 if((step%24000) == graphicSky[graphicSettings.sky].TransitionTime) {
+				 graphicSettings.sky = (graphicSettings.sky + 1)%graphicSky.length;
+				 console.log( "Moving towards " +  graphicSky[graphicSettings.sky].Day);
 			 }
-			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Night"){
-				 //Sky Color 
-				 Sky.R = -(Sky.R-Night.R)/(2750/backgroundInterval)  + Sky.R;
-				 Sky.G = -(Sky.G-Night.G)/(2750/backgroundInterval)  + Sky.G;
-				 Sky.B = -(Sky.B-Night.B)/(2750/backgroundInterval)  + Sky.B;
-				
-				 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-				
-				 //The SetLightSource becomes purple for dawn color
-				 Sky.LightR = -(Sky.LightR-Night.LightR)/(2750/backgroundInterval) + Sky.LightR;
-				 Sky.LightG = -(Sky.LightG-Night.LightG)/(2750/backgroundInterval) + Sky.LightG;
-				 Sky.LightB = -(Sky.LightB-Night.LightB)/(2750/backgroundInterval) + Sky.LightB;
-				
-				 //Setting the Color of the lights
-				 SetLightSource.color.r = Sky.LightR;
-				 SetLightSource.color.g = Sky.LightG;
-				 SetLightSource.color.b = Sky.LightB;
-				
-				 //Pedals
-				 Sky.PedalR = -(Sky.PedalR-Night.PedalR)/(2750/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Night.PedalG)/(2750/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Night.PedalB)/(2750/backgroundInterval) + Sky.PedalB;
-				
-				 //Audio
-				 //Decreasing the night music
-				 if(Sky.SummerTheme > 0 && SummerTheme.isPlaying == true){
-					 
-					Sky.SummerTheme -=  0.0025;
-					
-					if( Sky.SummerTheme <= 0 ){
-						Sky.SummerTheme =  0;
-						SummerTheme.stop();
-					}
-					else SummerTheme.volume= Math.floor(Sky.SummerTheme*10)/10;
-				 }
-				 //Increasing the Night music
-				  if(NightTheme.isPlaying == false) 
-					 NightTheme.play();
-				 if(Sky.NightTheme < 0.25){
-					 Sky.NightTheme +=  0.0005;
-					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
-				 }
-				
-				if((step%24000) >= 22000 ){
-					Sky.TransitioningTo = "MidNight";
-					console.log( "Moving towards " + Sky.TransitioningTo);
-				}
-					
-			 }
-			 else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "MidNight"){
-				Sky.R = -(Sky.R-MidNight.R)/(2000/backgroundInterval) + Sky.R;
-				Sky.G = -(Sky.G-MidNight.G)/(2000/backgroundInterval) + Sky.G;
-				Sky.B = -(Sky.B-MidNight.B)/(2000/backgroundInterval) + Sky.B;
-				
-				scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-				
-				//The SetLightSource becomes purple for dawn color
-				Sky.LightR = -(Sky.LightR-MidNight.LightR)/(2000/backgroundInterval) + Sky.LightR;
-				Sky.LightG = -(Sky.LightG-MidNight.LightG)/(2000/backgroundInterval) + Sky.LightG;
-				Sky.LightB = -(Sky.LightB-MidNight.LightB)/(2000/backgroundInterval) + Sky.LightB;
-				
-				SetLightSource.color.r = Sky.LightR;
-				SetLightSource.color.g = Sky.LightG;
-				SetLightSource.color.b = Sky.LightB;
-				
-				//Pedals
-				 Sky.PedalR = -(Sky.PedalR-MidNight.PedalR)/(2000/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-MidNight.PedalG)/(2000/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-MidNight.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
-				
-				 //Increasing the Night music
-				  if(NightTheme.isPlaying == false) 
-					 NightTheme.play();
-				 if(Sky.NightTheme < 0.25){
-					 Sky.NightTheme +=  0.0005;
-					 NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
-				 }
-				 
-				 if((step%24000) >= 4500 && (step%24000) <18000) {
-					 Sky.TransitioningTo = "Dawn";					
-					 console.log( "Moving towards " + Sky.TransitioningTo);
-				 }
-			 }
-			else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Dawn"){
-				Sky.R = -(Sky.R-Dawn.R)/(2000/backgroundInterval) + Sky.R;
-				Sky.G = -(Sky.G-Dawn.G)/(2000/backgroundInterval) + Sky.G;
-				Sky.B = -(Sky.B-Dawn.B)/(2000/backgroundInterval) + Sky.B;
-				
-				scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-				
-				//The SetLightSource becomes purple for dawn color
-				Sky.LightR = -(Sky.LightR-Dawn.LightR)/(2000/backgroundInterval) + Sky.LightR;
-				Sky.LightG = -(Sky.LightG-Dawn.LightG)/(2000/backgroundInterval) + Sky.LightG;
-				Sky.LightB = -(Sky.LightB-Dawn.LightB)/(2000/backgroundInterval) + Sky.LightB;
-				
-				SetLightSource.color.r = Sky.LightR;
-				SetLightSource.color.g = Sky.LightG;
-				SetLightSource.color.b = Sky.LightB;
-				
-				//Pedals
-				 Sky.PedalR = -(Sky.PedalR-Dawn.PedalR)/(2000/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Dawn.PedalG)/(2000/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Dawn.PedalB)/(2000/backgroundInterval) + Sky.PedalB;
-				
-				 //Audio
-				 //Decreasing the night music
-				 if(Sky.NightTheme > 0 && NightTheme.isPlaying == true){
-					 
-					Sky.NightTheme -=  0.0015;
-					
-					if( Sky.NightTheme <= 0 ){
-						Sky.NightTheme =  0;
-						NightTheme.stop();
-					}
-					else NightTheme.volume= Math.floor(Sky.NightTheme*10)/10;
-				 }
-				 
-				 //Increasing the Dawn music
-				 if(SpringTheme.isPlaying == false) 
-					 SpringTheme.play();
-				 if(Sky.SpringTheme < 0.5){
-					 Sky.SpringTheme +=  0.0005;
-					 SpringTheme.volume= Math.floor(Sky.SpringTheme*10)/10;
-				 }
-				
-				
-				if((step%24000) >= 6000 ){
-					Sky.TransitioningTo = "Day"
-					console.log( "Moving towards " + Sky.TransitioningTo);
-				}
-			}					
-			 else if(step % backgroundInterval == 0 && Sky.TransitioningTo == "Day"){
-				 Sky.R = -(Sky.R-Day.R)/(2500/backgroundInterval)  + Sky.R;
-				 Sky.G = -(Sky.G-Day.G)/(2500/backgroundInterval)  + Sky.G;
-				 Sky.B = -(Sky.B-Day.B)/(2500/backgroundInterval)  + Sky.B;
-				
-				 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-				
-				 //The SetLightSource becomes purple for dawn color
-				 Sky.LightR = -(Sky.LightR-Day.LightR)/(2250/backgroundInterval) + Sky.LightR;
-				 Sky.LightG = -(Sky.LightG-Day.LightG)/(2250/backgroundInterval) + Sky.LightG;
-				 Sky.LightB = -(Sky.LightB-Day.LightB)/(2250/backgroundInterval) + Sky.LightB;
-				
-				 SetLightSource.color.r = Sky.LightR;
-			 	 SetLightSource.color.g = Sky.LightG;
-				 SetLightSource.color.b = Sky.LightB;
-				
-				 //Pedals
-				 Sky.PedalR = -(Sky.PedalR-Day.PedalR)/(2250/backgroundInterval) + Sky.PedalR;
-				 Sky.PedalG = -(Sky.PedalG-Day.PedalG)/(2250/backgroundInterval) + Sky.PedalG;
-				 Sky.PedalB = -(Sky.PedalB-Day.PedalB)/(2250/backgroundInterval) + Sky.PedalB;
-				 
-				 //Increasing the Dawn music
-				 if(SpringTheme.isPlaying == false) 
-					 SpringTheme.play();
-				 if(Sky.SpringTheme < 0.5){
-					 Sky.SpringTheme +=  0.0025;
-					 SpringTheme.volume= Math.floor(Sky.SpringTheme*10)/10;
-				 }
-				
-				 if((step%24000) >= 13500 ){
-					 Sky.TransitioningTo = "Dusk"
-					 console.log( "Moving towards " + Sky.TransitioningTo);
-				 }
-			 }
-				
-		 scene.traverse(function (e) {
-			 //if( e == p || e == q){
+		 }	
+			
+			
+			
+	 scene.traverse(function (e) {
 			 //if (e instanceof THREE.Mesh) {
 			 if (e instanceof THREE.Sprite || e instanceof THREE.Mesh) {
 				 if(e == Tree){
@@ -641,48 +392,56 @@ function setup() {
 					 //e.position.x = 0.009 * Math.sin(step);
 				 }
 				 else if(e == Timez){
-					 var hours = Math.floor((((step%24000)-1000)/1000)%12)+1;
-					 if(hours == 0) hours =12;
-					
-					 var minutes = Math.floor((((step%24000)%1000)/1000)*60);
-					
-					 if( minutes < 10 && (step%24000)>=12000) e.parameters.text= hours+":0"+minutes+" PM";
-					 else if( minutes < 10 && (step%24000)<12000) e.parameters.text= hours+":0"+minutes+" AM";
-					 else if( minutes >= 10 && (step%24000)>=12000) e.parameters.text= hours+":"+minutes+" PM";
-					 else e.parameters.text= hours+":"+minutes+" AM"; //CHANGED
-					
+					 
+					 if(graphicSettings.time == "gameTime"){
+						 var hours = Math.floor((((step%24000)-1000)/1000)%12)+1;
+						 if(hours == 0) hours =12;
+						
+						 var minutes = Math.floor((((step%24000)%1000)/1000)*60);
+						
+						 if( minutes < 10 && (step%24000)>=12000) e.parameters.text= hours+":0"+minutes+" PM";
+						 else if( minutes < 10 && (step%24000)<12000) e.parameters.text= hours+":0"+minutes+" AM";
+						 else if( minutes >= 10 && (step%24000)>=12000) e.parameters.text= hours+":"+minutes+" PM";
+						 else e.parameters.text= hours+":"+minutes+" AM"; //CHANGED
+						 
+						 if(((step%24000) < 7000) || ((step%24000) > 16000))
+							 e.parameters.fillStyle= "White";
+						 else
+							 e.parameters.fillStyle= "Black";
+					 }
+					 
 					 e.update();
 				 }
 				 else if(e == spotLight){
 					 //Idk what to do with the spotLight but I plan to use it in the future
 				 }
-				 else if(e != THREE.PointLight){ // Pedals
+				 else if(e.name == "Petals"){ 
 					 
-					 //First Update the color of the pedals
+					 // First Update the color of the petals
 					 e.material.color  = new THREE.Color("rgb("+  Math.floor(Sky.PedalR) +","+  Math.floor(Sky.PedalG) +","+  Math.floor(Sky.PedalB) +")");
-					 
-					 if(e.name == 0){
+					  
+					 if(e.type == 0){
 						 e.position.y -= (0.02 + 0.01* Math.sin(step/120));
 						 e.position.x -= 0.05 * Math.sin(step/120 + 1);
 						 e.material.rotation = 0.6*Math.sin(step/120 + 1);
 					 }
-					 else if(e.name == 1){
+					 else if(e.type == 1){
 						 e.position.y -= (0.02 + 0.01* Math.sin(step/120));
 						 e.position.x -= 0.05 * Math.cos(step/120 + 0.5);
 						 e.material.rotation = 0.6*Math.cos(step /120+ 0.5);
 					 }
-					 else if(e.name == 2){
+					 else if(e.type == 2){
 						 e.position.y -= 0.008;
 						 e.position.x -= 0.05 * Math.sin(step/120 + 0.5);
 						 e.material.rotation += 0.12;
 					 }
-					 else if(e.name == 3){
+					 else if(e.type == 3){
 						 e.position.y -= 0.0075;
 						 e.position.z -= 0.05 * Math.sin(step/120 + 0.5)/ 5;
 						 e.position.x -= 0.05 * Math.sin(step/120 + 0.5)/5;
 						 e.material.rotation = Math.sin(step/120 + 0.5);;
 					 }
-					 else if(e.name == 4){
+					 else if(e.type == 4){
 						 e.position.y -= 0.003+Math.sin(step/60 )*0.002;
 						 e.position.z = -3 + Math.sin(step/60 + 0.5)*5;
 						 e.position.x =  e.position.x - Math.sin(step/120 + 0.5)/15;
@@ -690,11 +449,14 @@ function setup() {
 						
 						 if(e.position.y <=-5){
 							  e.position.y = 10;
+							  e.type = Math.floor( Math.random() * 5 );
 						 }
 					 }
 					 
-					 if(e.position.y <=-8){
+					 // Once the Petal gets to low off screen then it is shown
+					 if(e.position.y <= -8){
 						  e.position.y = 10;
+						  e.type = Math.floor( Math.random() * 5 );
 					 }
 					 
 				 }
@@ -702,7 +464,33 @@ function setup() {
 		 });
 	 }
 	 
-	 //This function will transition the sky color and the lights
+	 // Make Objects Draggable - Additionally used as buttons
+	 function drag_objects(){
+		 var dragControls  = new THREE.DragControls( objects, camera, renderer.domElement );
+				
+			 dragControls.addEventListener( 'dragstart', function(event) {
+				 // Card Holders
+				 if (event.object.name == "Clock"){
+					 
+					 var d = new Date();
+					 console.log(d.getHours() +":" + d.getMinutes());
+				 }
+				
+				 //console.log("lol start of drag: ");
+			 });
+			 
+			 dragControls.addEventListener( 'drag', function(event)   {
+				 if(event.object.type == "button")
+					 event.object.position.set(event.object.posX, event.object.posY, event.object.posZ);
+			 });
+			 
+			 dragControls.addEventListener( 'dragend', function(event)  {});
+		 
+		 //console.log(dragControls);
+		 //https://www.learnthreejs.com/drag-drop-dragcontrols-mouse/
+	 }
+	 
+	 // This function will transition the sky color and the lights
 	 function transitionDay(step, CurrentSky, GoalSky){
 		 //Change Sky Color
 		 CurrentSky.R = -(CurrentSky.R-GoalSky.R)/(4000/backgroundInterval) + CurrentSky.R;
@@ -719,9 +507,120 @@ function setup() {
 		 SetLightSource.color.r = Sky.LightR;
 		 SetLightSource.color.g = Sky.LightG;
 		 SetLightSource.color.b = Sky.LightB;
-		 
-		 
 	 }
+	 
+	 // Create Petals
+	 function createPetals() {
+		 // Checks to see whether the petalTextures has been uploaded yet
+		 if(petalTextures == null){
+			 var loader = new THREE.TextureLoader();
+			 loader.crossOrigin = true;
+			 var Texture00 = loader.load( 'Images/Bpedal - Copy.png' );
+			 Texture00.minFilter = THREE.LinearFilter;
+			 petalTextures = new THREE.SpriteMaterial( { map: Texture00, color: 0xff5599 } );
+		 }
+		 
+		 var Petals =  new THREE.Sprite(petalTextures);
+		 Petals.scale.set(0.5,0.25,1);
+		 //Pellets.scale.set(0.5,0.5,1);
+		 Petals.material.lights = true;
+		 Petals.castShadow = true;
+		 Petals.name = "Petals";
+		 Petals.type = Math.floor(Math.random()*5);
+		 
+		 Petals.position.set( Math.floor(Math.random()*20)-5, 	// X
+										 Math.floor(Math.random()*15)-5, 	// Y
+										 Math.floor(Math.random()*8)); 		// Z
+	 
+		 return Petals;
+	 };	
+	
+	 // Load the Set Sky Colors
+	 function loading_Sky_Colors(){
+		 graphicSky = [];		 
+		 
+		 // 0 - Setting the MidNight - 12 AM
+		 var MidNight = {
+			 Day: "MidNight",
+			 R:12,
+			 G:8,
+			 B:26,
+			 LightR:1,
+			 LightG:1,
+			 LightB:1,
+			 PedalR:255,
+			 PedalG:85,
+			 PedalB:153,
+			 TransitionTime:4500
+		 };
+		 graphicSky.push(MidNight);
+		 
+		 // 1 - Setting the Dawn - 4 AM
+		 var Dawn = {
+			 Day: "Dawn",
+			 R:132,
+			 G:109,
+			 B:231,
+			 LightR:5,
+			 LightG:0,
+			 LightB:20,
+			 PedalR:255,
+			 PedalG:185,
+			 PedalB:205,
+			 TransitionTime:6000
+		 };
+		 graphicSky.push(Dawn);
+		 
+		 // 2 - Setting the Day - 9 AM
+		 var Day = {
+			 Day: "Day",
+			 R:77,
+			 G:223,
+			 B:255,
+			 LightR:10,
+			 LightG:15,
+			 LightB:15,
+			 PedalR:255,
+			 PedalG:235,
+			 PedalB:235,
+			 TransitionTime:15500
+		 };
+		 graphicSky.push(Day);
+		 
+		 // 3 - Setting the Dusk - 6 PM
+		 var Dusk = {
+			 Day: "Dusk",
+			 R:255,
+			 G:193,
+			 B:151,
+			 LightR:9,
+			 LightG:4,
+			 LightB:3,
+			  PedalR:200,
+			 PedalG:125,
+			 PedalB:255,
+			 TransitionTime:17500
+		 }; 
+		 graphicSky.push(Dusk);
+		 
+		 // 4 - Setting the Night - 9 PM
+		 var Night = {
+			 Day: "Night",
+			 R:25,
+			 G:46,
+			 B:105,
+			 LightR:1,
+			 LightG:1,
+			 LightB:3,
+			 PedalR:240,
+			 PedalG:85,
+			 PedalB:190,
+			 TransitionTime:22500
+		 };
+		 graphicSky.push(Night);
+	 }
+	 
+	 
 	 
 	 
 }
