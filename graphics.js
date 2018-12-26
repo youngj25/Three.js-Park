@@ -1,5 +1,7 @@
 var wait=0, direction = -1;
-var Timez, petalTextures = null;
+var Timez;
+var petalTextures = null, sunTexture;
+var moonLight, sunLight;
 var graphicSettings, graphicSky;
 var objects = [];
 
@@ -11,10 +13,7 @@ function setup() {
 	 camera = new THREE.PerspectiveCamera(45, 800/ 500, 0.1, 1000);
 	 camera.position.set(0,0,20);
 	 camera.lookAt(scene.position);
-	 scene.add(camera);
-	 //Scene Background of course
-	 //scene.background = new THREE.Color( 0x4DD3FF );
-	
+	 scene.add(camera);	
 	
 	 // create a render and set the size
 	 renderer = new THREE.WebGLRenderer({ antialias: true} );
@@ -36,10 +35,8 @@ function setup() {
 	 graphicSettings = {
 		 time: "gameTime",
 		 music: false,
+		 backgroundInterval : 5,
 		 sky : 4,
-		 TransitioningTo : "MidNight"
-		 
-		 /**
 		 R:25,
 		 G:46,
 		 B:105,
@@ -49,12 +46,10 @@ function setup() {
 		 PedalR:255,
 		 PedalG:85,
 		 PedalB:153,
-		 TransitioningTo: "Night",
+		 TransitioningTo: "MidNight",
 		 NightTheme:0.2,
 		 SummerTheme:0,
 		 SpringTheme:0		 
-		 **/
-		 
 	 }
 		
 	 //add spotlight for the shadows
@@ -81,7 +76,7 @@ function setup() {
 	 Timez.type = "button";
 	 scene.add(Timez);
 	 objects.push(Timez);
-	 console.log(Timez);		 
+	 //console.log(Timez);		 
 		 
 	 // Petals Added to the Scene
 	 for(var x = 0; x < 25; x++)
@@ -117,96 +112,20 @@ function setup() {
 		 SummerTheme.setVolume( 0.2 );
 	 });
 	 **/	
-		
-	 // Loader
-	 var loader = new THREE.TextureLoader();
-	 loader.crossOrigin = true;
-		
-	 // Grass
-	 var grass = loader.load( 'Images/hd-grass-background-1.jpg' );
-	 grass.minFilter = THREE.LinearFilter;
-	 var planeGeometry = new THREE.PlaneBufferGeometry (37.5, 15,0);	
-	 var planeMaterial =  new THREE.MeshLambertMaterial( { map: grass, color: 0xffffff } );
-	 var Board = new THREE.Mesh(planeGeometry, planeMaterial);
-	 Board.position.set(0,-5.8,0); //xyz
-	 Board.rotation.x = -1.45
-	 Board.lights = true;
-	 scene.add(Board);
-	
-	 // Tree
-	 var wood = loader.load( 'Images/tree-218738_960_720.jpg' );
-	 wood.minFilter = THREE.LinearFilter;
-	 var planeMaterial2 =  new THREE.MeshLambertMaterial( { map: wood, color: 0xffffff } );
-	 var geometry = new THREE.CylinderGeometry( 1.25, 1.35, 13.5, 10 );
-	 var Tree = new THREE.Mesh( geometry, planeMaterial2 );
-	 //Tree.position.set(-7.5,-1,-3); //xyz
-	 //Tree.lights = true;
-	 //scene.add( Tree );
-	
-	 // Moon
- 	 var moon = loader.load( 'Images/moonTexture.jpg' );
-	 moon.minFilter = THREE.LinearFilter;
-	 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
-	 var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
-	 var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
-	 Moon.position.set(-10,20,10); //xyz
-	 scene.add( Moon );
-	 
-	 // MoonLight
-	 var moonLight = new THREE.PointLight( 0x5555ff, 3.25, 100 );
-	 moonLight.position.x = Moon.position.x;
-	 moonLight.position.y = Moon.position.y;
-	 moonLight.position.z = Moon.position.z;
-	 scene.add( moonLight );
-	
-	 // Sun //Credits: https://i.ytimg.com/vi/nUWfZfsW7uU/maxresdefault.jpg
-	 var sun = loader.load( 'Images/sunTexture.jpg' );
-	 sun.minFilter = THREE.LinearFilter;
-	 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
-	 var sphereMaterial = new THREE.MeshBasicMaterial(  { map: sun, color: 0xffff00 } );
-	 var Sun = new THREE.Mesh( sphereGeometry, sphereMaterial );
-	 Sun.position.set(-10,20,10); //xyz
-	 scene.add( Sun );
-	 var sunLight = new THREE.PointLight( 0xffffff, 4, 100 );
-	 sunLight.position.x = Sun.position.x;
-	 sunLight.position.y = Sun.position.y;
-	 sunLight.position.z = Sun.position.z;
-	 scene.add( sunLight );
 	
 	 // Dawn Light
-	 var dawnLight = new THREE.PointLight( 0x00ff00, 2, 100 );
+	 //var dawnLight = new THREE.PointLight( 0x00ff00, 2, 100 );
 	 //scene.add( dawnLight );
 	
 	 // Dusk Light
-	 var duskLight = new THREE.PointLight( 0xff0000, 2.5, 100 );
+	 //var duskLight = new THREE.PointLight( 0xff0000, 2.5, 100 );
 	 //scene.add( duskLight );
 	
 	 var SetLightSource = new THREE.PointLight( 0x000000, 0.15, 100 );
 	 SetLightSource.position.set(0,30,-10); //xyz
 	 scene.add( SetLightSource );
-	
-	 // Bench
-	 var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
-	 wood.minFilter = THREE.LinearFilter;
- 	 var planeGeometry3 = new THREE.BoxGeometry (5.5, 2.5,0.25);
-	 var planeMaterial3 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
-	 var BenchB = new THREE.Mesh(planeGeometry3, planeMaterial3);
-	 BenchB.position.set(2.5,-2,1); //xyz
-	 BenchB.rotation.x = -1.25
-	 //Stop bench for now
-	 //scene.add(BenchB);
-	
-	 //var planeGeometry3 = new THREE.BoxGeometry (5.5, 1,0.25);
-	 var planeMaterial3 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
-	 var BenchT = new THREE.Mesh(planeGeometry3, planeMaterial3);
-	 BenchT.position.set(2.5,-1.25,1); //xyz
-	 BenchT.rotation.x = 0
-	 //Stop bench for now
-	 //scene.add(BenchT);
-	
-	 //var Status = document.getElementById("Status").innerHTML;
 	 
-	 //The KEyboard Commands
+	 //The Keyboard Commands
 	 var onKeyDown = function(event) {
 		 if (event.keyCode == 38){ //Up Arrow
 			 Sky.TransitioningTo = "Day";
@@ -255,25 +174,8 @@ function setup() {
 	 window.addEventListener('resize', onWindowResize, false);
 	 //https://stackoverflow.com/questions/20290402/three-js-resizing-canvas?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	
-	 //Sky Colors based on Timez and step
-	 var Sky = { //Changing variable
-		 R:25,
-		 G:46,
-		 B:105,
-		 LightR:2,
-		 LightG:2,
-		 LightB:5,
-		 PedalR:255,
-		 PedalG:85,
-		 PedalB:153,
-		 TransitioningTo: "Night",
-		 NightTheme:0.2,
-		 SummerTheme:0,
-		 SpringTheme:0
-	 };
-	
 	 // scene.background = new THREE.Color( 0x4DD3FF );
-	 scene.background = new THREE.Color( "rgb("+Sky.R+","+Sky.G+","+Sky.B+")" );
+	 scene.background = new THREE.Color( "rgb("+graphicSettings.R+","+graphicSettings.G+","+graphicSettings.B+")" );
 		
 	 // add the output of the renderer to the html element
 	 document.getElementById("WebGL-output").appendChild(renderer.domElement);
@@ -286,50 +188,42 @@ function setup() {
 	 // call the render function
 	 // var step = 0;
 	 var step = 22450;
-	 // backgroundInterval for the step to update the screen background
-	 var backgroundInterval = 5;
-	 // Divisor for the change between the colors
-	 var colorDivisor  = 100;
-	
-	 // Free Rendering... it will run and run and run as much as it wants
+	 
+	 loading_Sky_Colors();
+	 load_Images();
 	 renderScene();
 	 drag_objects();
-	 loading_Sky_Colors();
 	 
+	 
+	 // 
 	 function renderScene(){
 		 // Render steps
-		 if( document.getElementById("Status").innerHTML == "Real Life Time"){
-			 //Sets the steps/time
-			 step = Math.round(step);
-			 
-		 }				 
-		 else
-			 step = Math.round(1+step);
+		 step = Math.round(1+step);
 		
 		 // render using requestAnimationFrame
 		 requestAnimationFrame(renderScene);
 		 renderer.render(scene, camera);
 		
-		 if(step % backgroundInterval == 0){
-			 Sky.R = -(Sky.R-graphicSky[graphicSettings.sky].R)/(2000/backgroundInterval) + Sky.R;
-			 Sky.G = -(Sky.G-graphicSky[graphicSettings.sky].G)/(2000/backgroundInterval) + Sky.G;
-			 Sky.B = -(Sky.B-graphicSky[graphicSettings.sky].B)/(2000/backgroundInterval) + Sky.B;
+		 if(step % graphicSettings.backgroundInterval == 0){
+			 graphicSettings.R = -(graphicSettings.R-graphicSky[graphicSettings.sky].R)/(2000/graphicSettings.backgroundInterval) + graphicSettings.R;
+			 graphicSettings.G = -(graphicSettings.G-graphicSky[graphicSettings.sky].G)/(2000/graphicSettings.backgroundInterval) + graphicSettings.G;
+			 graphicSettings.B = -(graphicSettings.B-graphicSky[graphicSettings.sky].B)/(2000/graphicSettings.backgroundInterval) + graphicSettings.B;
 			
-			 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
+			 scene.background = new THREE.Color( "rgb("+Math.round(graphicSettings.R)+","+Math.round(graphicSettings.G)+","+Math.round(graphicSettings.B)+")" );
 			
 			 // The SetLightSource becomes purple for dawn color
-			Sky.LightR = -(Sky.LightR-graphicSky[graphicSettings.sky].LightR)/(2000/backgroundInterval) + Sky.LightR;
-			Sky.LightG = -(Sky.LightG-graphicSky[graphicSettings.sky].LightG)/(2000/backgroundInterval) + Sky.LightG;
-			Sky.LightB = -(Sky.LightB-graphicSky[graphicSettings.sky].LightB)/(2000/backgroundInterval) + Sky.LightB;
+			graphicSettings.LightR = -(graphicSettings.LightR-graphicSky[graphicSettings.sky].LightR)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightR;
+			graphicSettings.LightG = -(graphicSettings.LightG-graphicSky[graphicSettings.sky].LightG)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightG;
+			graphicSettings.LightB = -(graphicSettings.LightB-graphicSky[graphicSettings.sky].LightB)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightB;
 			
-			 SetLightSource.color.r = Sky.LightR;
-			 SetLightSource.color.g = Sky.LightG;
-			 SetLightSource.color.b = Sky.LightB;
+			 SetLightSource.color.r = graphicSettings.LightR;
+			 SetLightSource.color.g = graphicSettings.LightG;
+			 SetLightSource.color.b = graphicSettings.LightB;
 			
 			 // Pedals
-			 Sky.PedalR = -(Sky.PedalR-graphicSky[graphicSettings.sky].PedalR)/(2000/backgroundInterval) + Sky.PedalR;
-			 Sky.PedalG = -(Sky.PedalG-graphicSky[graphicSettings.sky].PedalG)/(2000/backgroundInterval) + Sky.PedalG;
-			 Sky.PedalB = -(Sky.PedalB-graphicSky[graphicSettings.sky].PedalB)/(2000/backgroundInterval) + Sky.PedalB;
+			 graphicSettings.PedalR = -(graphicSettings.PedalR-graphicSky[graphicSettings.sky].PedalR)/(2000/graphicSettings.backgroundInterval) + graphicSettings.PedalR;
+			 graphicSettings.PedalG = -(graphicSettings.PedalG-graphicSky[graphicSettings.sky].PedalG)/(2000/graphicSettings.backgroundInterval) + graphicSettings.PedalG;
+			 graphicSettings.PedalB = -(graphicSettings.PedalB-graphicSky[graphicSettings.sky].PedalB)/(2000/graphicSettings.backgroundInterval) + graphicSettings.PedalB;
 			 
 			 // 			 
 			 if((step%24000) == graphicSky[graphicSettings.sky].TransitionTime) {
@@ -343,18 +237,7 @@ function setup() {
 	 scene.traverse(function (e) {
 			 //if (e instanceof THREE.Mesh) {
 			 if (e instanceof THREE.Sprite || e instanceof THREE.Mesh) {
-				 if(e == Tree){
-					 //nsole.log("Trial!!");
-					 //Don't move the tree
-					 //e.rotation.z = 0.001 * Math.sin(step);
-				 }
-				 else if(e == Board){
-					 //nsole.log("Trial!!");
-					 //Don't need to move the grass
-					 //e.rotation.z = 0.001 * Math.sin(step);
-					 //e.position.x = 0.009 * Math.sin(step);
-				 }
-				 else if(e == Moon){
+				 if(e.name == "Moon"){
 					 //Have the Moon Rotate sideways
 					e.rotation.y += 0.003;
 					e.position.x = - Math.sin( Math.PI * (step-1000)/12000)*140;
@@ -362,13 +245,14 @@ function setup() {
 					moonLight.position.x = e.position.x;
 					moonLight.position.z = e.position.z;
 				 }
-				 else if(e == Sun){
-					 e.rotation.z += 0.003;
+				 else if(e.name == "Sun"){
+					 e.rotation.z += 0.001;
 					 e.position.x =  Math.sin( Math.PI * (step-1000)/12000)*140;
 					 e.position.z =40+  Math.cos( Math.PI * step/12000)*90;
 					 sunLight.position.x = e.position.x;
 					 sunLight.position.z = e.position.z;
 				 } 
+				 /**
 				 else if(e == dawnLight){
 					 //To keep the material lit
 					 e.position.x =  Math.sin( Math.PI * (step+5000)/12000)*140;
@@ -379,18 +263,7 @@ function setup() {
 					 e.position.x =  Math.sin( Math.PI * (step-4000)/12000)*140;
 					 e.position.z =35 + Math.cos( Math.PI * (step-3000)/12000)*80;
 				 }
-				 else if(e == BenchB){
-					 e.rotation.x -= 0.003 * Math.sin(step/1000);
-					 e.position.z += 0.025 * Math.sin(step/1000);
-					 e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 2;
-					 //e.position.x = 0.009 * Math.sin(step);
-				 }
-				 else if(e == BenchT){
-					 e.rotation.x -= 0.003 * Math.sin(step/1000);
-					 e.position.z += 0.0025 * Math.sin(step/1000);
-					 e.position.y = -Math.abs(1.25 * Math.sin(step/1000)) - 1.25;
-					 //e.position.x = 0.009 * Math.sin(step);
-				 }
+				 **/
 				 else if(e == Timez){
 					 
 					 if(graphicSettings.time == "gameTime"){
@@ -412,13 +285,10 @@ function setup() {
 					 
 					 e.update();
 				 }
-				 else if(e == spotLight){
-					 //Idk what to do with the spotLight but I plan to use it in the future
-				 }
 				 else if(e.name == "Petals"){ 
 					 
 					 // First Update the color of the petals
-					 e.material.color  = new THREE.Color("rgb("+  Math.floor(Sky.PedalR) +","+  Math.floor(Sky.PedalG) +","+  Math.floor(Sky.PedalB) +")");
+					 e.material.color  = new THREE.Color("rgb("+  Math.floor(graphicSettings.PedalR) +","+  Math.floor(graphicSettings.PedalG) +","+  Math.floor(graphicSettings.PedalB) +")");
 					  
 					 if(e.type == 0){
 						 e.position.y -= (0.02 + 0.01* Math.sin(step/120));
@@ -488,25 +358,6 @@ function setup() {
 		 
 		 //console.log(dragControls);
 		 //https://www.learnthreejs.com/drag-drop-dragcontrols-mouse/
-	 }
-	 
-	 // This function will transition the sky color and the lights
-	 function transitionDay(step, CurrentSky, GoalSky){
-		 //Change Sky Color
-		 CurrentSky.R = -(CurrentSky.R-GoalSky.R)/(4000/backgroundInterval) + CurrentSky.R;
-		 CurrentSky.G = -(CurrentSky.G-GoalSky.G)/(4000/backgroundInterval) + CurrentSky.G;
-		 CurrentSky.B = -(CurrentSky.B-GoalSky.B)/(4000/backgroundInterval) + CurrentSky.B;
-		 
-		 scene.background = new THREE.Color( "rgb("+Math.round(Sky.R)+","+Math.round(Sky.G)+","+Math.round(Sky.B)+")" );
-		
-		  //The SetLightSource becomes purple for dawn color
-		 Sky.LightR = -(Sky.LightR-Dusk.LightR)/(4000/backgroundInterval) + Sky.LightR;
-		 Sky.LightG = -(Sky.LightG-Dusk.LightG)/(4000/backgroundInterval) + Sky.LightG;
-		 Sky.LightB = -(Sky.LightB-Dusk.LightB)/(4000/backgroundInterval) + Sky.LightB;
-		
-		 SetLightSource.color.r = Sky.LightR;
-		 SetLightSource.color.g = Sky.LightG;
-		 SetLightSource.color.b = Sky.LightB;
 	 }
 	 
 	 // Create Petals
@@ -590,9 +441,9 @@ function setup() {
 		 // 3 - Setting the Dusk - 6 PM
 		 var Dusk = {
 			 Day: "Dusk",
-			 R:255,
-			 G:193,
-			 B:151,
+			 R:145,
+			 G:43,
+			 B:93,
 			 LightR:9,
 			 LightG:4,
 			 LightB:3,
@@ -620,7 +471,92 @@ function setup() {
 		 graphicSky.push(Night);
 	 }
 	 
-	 
+	 // Load Textures
+	 function load_Images(){		 
+		 
+		 // Loader
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+			
+		 // Grass
+		 var grass = loader.load( 'Images/hd-grass-background-1.jpg' );
+		 grass.minFilter = THREE.LinearFilter;
+		 var planeGeometry = new THREE.PlaneBufferGeometry (37.5, 15,0);	
+		 var planeMaterial =  new THREE.MeshLambertMaterial( { map: grass, color: 0xffffff } );
+		 var Board = new THREE.Mesh(planeGeometry, planeMaterial);
+		 Board.position.set(0,-5.8,0); //xyz
+		 Board.rotation.x = -1.45
+		 Board.lights = true;
+		 Board.name = "Grass";
+		 scene.add(Board);
+		
+		 // Tree
+		 /**
+		 var wood = loader.load( 'Images/tree-218738_960_720.jpg' );
+		 wood.minFilter = THREE.LinearFilter;
+		 var planeMaterial2 =  new THREE.MeshLambertMaterial( { map: wood, color: 0xffffff } );
+		 var geometry = new THREE.CylinderGeometry( 1.25, 1.35, 13.5, 10 );
+		 var Tree = new THREE.Mesh( geometry, planeMaterial2 );
+		 //Tree.position.set(-7.5,-1,-3); //xyz
+		 //Tree.lights = true;
+		 //scene.add( Tree );
+		 **/		 
+		 
+		  // Moon
+		 var moon = loader.load( 'Images/moonTexture.jpg' );
+		 moon.minFilter = THREE.LinearFilter;
+		 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
+		 var sphereMaterial = new THREE.MeshBasicMaterial(  { map: moon, color: 0xffffff } );
+		 var Moon = new THREE.Mesh( sphereGeometry, sphereMaterial );
+		 Moon.position.set(-10,20,10); //xyz
+		 Moon.name = "Moon";
+		 scene.add( Moon );		 
+		 // Moon Light
+		 moonLight = new THREE.PointLight( 0x5555ff, 3.25, 100 );
+		 moonLight.position.x = Moon.position.x;
+		 moonLight.position.y = Moon.position.y;
+		 moonLight.position.z = Moon.position.z;
+		 moonLight.name = "Moon Light";
+		 scene.add( moonLight );		 
+		 
+		 // Sun //Credits: https://i.ytimg.com/vi/nUWfZfsW7uU/maxresdefault.jpg
+		 var sun = loader.load( 'Images/sunTexture.jpg' );
+		 sun.minFilter = THREE.LinearFilter;
+		 var sphereGeometry = new THREE.SphereGeometry(5,16,16);
+		 var sphereMaterial = new THREE.MeshBasicMaterial(  { map: sun, color: 0xffff00 } );
+		 var Sun = new THREE.Mesh( sphereGeometry, sphereMaterial );
+		 Sun.position.set(-10,20,10); //xyz
+		 Sun.name = "Sun";
+		 scene.add( Sun );
+		 // Sun Light
+		 sunLight = new THREE.PointLight( 0xffffff, 4, 100 );
+		 sunLight.position.x = Sun.position.x;
+		 sunLight.position.y = Sun.position.y;
+		 sunLight.position.z = Sun.position.z;
+		 sunLight.name = "Sun Light";
+		 scene.add( sunLight );		 
+		 
+		  // Bench - For now it will stay unused 
+		 /**
+		 var wood = loader.load( 'Images/depositphotos_18826293-stock-photo-wood-texture-white-wooden-background.jpg' );
+		 wood.minFilter = THREE.LinearFilter;
+		 var planeGeometry3 = new THREE.BoxGeometry (5.5, 2.5,0.25);
+		 var planeMaterial3 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
+		 var BenchB = new THREE.Mesh(planeGeometry3, planeMaterial3);
+		 BenchB.position.set(2.5,-2,1); //xyz
+		 BenchB.rotation.x = -1.25
+		 //Stop bench for now
+		 //scene.add(BenchB);
+		
+		 //var planeGeometry3 = new THREE.BoxGeometry (5.5, 1,0.25);
+		 var planeMaterial3 =  new THREE.MeshBasicMaterial( { map: wood, color: 0xffffff } );
+		 var BenchT = new THREE.Mesh(planeGeometry3, planeMaterial3);
+		 BenchT.position.set(2.5,-1.25,1); //xyz
+		 BenchT.rotation.x = 0
+		 //Stop bench for now
+		 //scene.add(BenchT);
+		 **/
+	 }
 	 
 	 
 }
