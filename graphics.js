@@ -212,9 +212,9 @@ function setup() {
 			 scene.background = new THREE.Color( "rgb("+Math.round(graphicSettings.R)+","+Math.round(graphicSettings.G)+","+Math.round(graphicSettings.B)+")" );
 			
 			 // The SetLightSource becomes purple for dawn color
-			graphicSettings.LightR = -(graphicSettings.LightR-graphicSky[graphicSettings.sky].LightR)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightR;
-			graphicSettings.LightG = -(graphicSettings.LightG-graphicSky[graphicSettings.sky].LightG)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightG;
-			graphicSettings.LightB = -(graphicSettings.LightB-graphicSky[graphicSettings.sky].LightB)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightB;
+			 graphicSettings.LightR = -(graphicSettings.LightR-graphicSky[graphicSettings.sky].LightR)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightR;
+			 graphicSettings.LightG = -(graphicSettings.LightG-graphicSky[graphicSettings.sky].LightG)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightG;
+			 graphicSettings.LightB = -(graphicSettings.LightB-graphicSky[graphicSettings.sky].LightB)/(2000/graphicSettings.backgroundInterval) + graphicSettings.LightB;
 			
 			 SetLightSource.color.r = graphicSettings.LightR;
 			 SetLightSource.color.g = graphicSettings.LightG;
@@ -341,9 +341,7 @@ function setup() {
 			 dragControls.addEventListener( 'dragstart', function(event) {
 				 // Card Holders
 				 if (event.object.name == "Clock"){
-					 
-					 var d = new Date();
-					 console.log(d.getHours() +":" + d.getMinutes());
+					 go_to_real_time_scene();
 				 }
 				
 				 //console.log("lol start of drag: ");
@@ -557,6 +555,92 @@ function setup() {
 		 //scene.add(BenchT);
 		 **/
 	 }
+	 
+	 // 
+	 function go_to_real_time_scene(){
+		 var d = new Date();
+		 //step
+		 step = d.getHours() * 1000;
+		 step += Math.floor(d.getMinutes() * (50/3));
+		 console.log("step = " + step); 
+		 var current = 0;
+		 var previous = graphicSky.length-1;
+		 
+		 for(var x = 0; x < graphicSky.length && current == 0; x++)
+			 if(step <= graphicSky[x].TransitionTime){
+				 current = x;
+				 previous = (x-1)% graphicSky.length;
+			 }
+
+		 var percentageChange= 0;
+		 graphicSettings.sky = current;
+		 graphicSettings.TransitioningTo = graphicSky[current].Day;
+		 
+		 /**
+			 sky : 4,
+			 R:25,
+			 G:46,
+			 B:105,
+			 LightR:2,
+			 LightG:2,
+			 LightB:5,
+			 PedalR:255,
+			 PedalG:85,
+			 PedalB:153,
+			 TransitioningTo: "MidNight",
+		 **/
+		 
+		 if(current == 0){
+			 // From 4 -> 0 the difference is 6000
+			 // Night(4) to MidNight(0)
+			 if(step <= 24000)
+				 percentageChange = step-22500;
+			 else if(step>= 0)
+				 percentageChange = step+1500;
+			 
+			 percentageChange = percentageChange / 6000;
+		 }
+		 else if(current == 1){
+			 // From 0 -> 1 the difference is 1500
+			 // MidNight(0) to Dawn(1)
+			 
+			 percentageChange = step / 1500;			 
+		 }
+		 else if(current == 2){
+			 // From 1 -> 2 the difference is 9500
+			 // Dawn(1) to Day(2)
+			 
+			 percentageChange = step / 9500;			 
+		 }
+		 else if(current == 3){
+			 // From 2 -> 3 the difference is 2000
+			 // Day(2) to Dusk(3)
+			 
+			 percentageChange = step / 2000;			 
+		 }
+		 else if(current == 4){
+			 // From 3 -> 4 the difference is 5000
+			 // Dusk(3) to Night(4)
+			 
+			 percentageChange = step / 5000;			 
+		 }		 
+		 
+		 
+		 //console.log(graphicSky[previous].Day+" to "+graphicSky[current].Day); 
+		 //console.log("Above ("+graphicSky[current].Day+") by "+(graphicSky[current].TransitionTime));
+		 //console.log("Below ("+graphicSky[previous].Day+") by "+(graphicSky[previous].TransitionTime));
+		 
+		 
+		 graphicSettings.R = -((graphicSky[current].R-graphicSky[graphicSettings.sky].R)*percentageChange)/(2000/graphicSettings.backgroundInterval)+ graphicSettings.R;
+		 graphicSettings.G = -((graphicSky[current].G-graphicSky[graphicSettings.sky].G)*percentageChange)/(2000/graphicSettings.backgroundInterval)+ graphicSettings.G;
+		 graphicSettings.B = -((graphicSky[current].B-graphicSky[graphicSettings.sky].B)*percentageChange)/(2000/graphicSettings.backgroundInterval)+ graphicSettings.B;
+		 
+		 scene.background = new THREE.Color( "rgb("+Math.round(graphicSettings.R)+","+Math.round(graphicSettings.G)+","+Math.round(graphicSettings.B)+")" );
+			
+			
+	 } 
+	 
+	 
 	 
 	 
 }
